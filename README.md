@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # WGTCSLA-Mobile-App
 =======
 # Welcome to your Expo app 👋
