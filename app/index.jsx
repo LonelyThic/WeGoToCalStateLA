@@ -1,6 +1,6 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import Colors from "./../constant/Colors";
-import Corners from "./../constant/Corners";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Colors from "../constant/Colors";
+import Corners from "../constant/Corners";
 
 export default function Index() {
   return (
@@ -56,16 +56,16 @@ export default function Index() {
           well-being.
         </Text>
 
-        <View style={styles.button}>
+        <TouchableOpacity style={styles.button}>
           <Text style={[styles.buttonText, {color: Colors.WHITE}]}>Signup</Text>
-        </View>
-        <View style={[styles.button,{
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button,{
           backgroundColor: Colors.PRIMARY,
           borderWidth: 1,
           borderColor: Colors.WHITE,
           }]}>
           <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Login</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
