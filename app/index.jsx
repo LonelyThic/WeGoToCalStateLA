@@ -1,15 +1,16 @@
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
-
 export default function Index() {
-  
-  const router = useRouter(); {/* This is a hook that allows us to navigate to different pages */}
+
+  {/* This is a hook that allows us to navigate to different pages */ }
+  const router = useRouter();
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         padding: 25,
@@ -18,12 +19,13 @@ export default function Index() {
 
       }}
     >
-      <Image source={require('./../assets/images/CSULA.png')} 
-      style={{
-        width: '100%',
-        height: '50%',
-        padding: 25,
-        alignSelf: 'center'}}
+      <Image source={require('./../assets/images/CSULA.png')}
+        style={{
+          width: 360,
+          height: 400,
+          padding: 25,
+          alignSelf: 'center'
+        }}
       />
       <View
         style={{
@@ -47,7 +49,7 @@ export default function Index() {
           WeGoToCalStateLA
         </Text>
 
-        <Text
+        {/* <Text
           style={{
             fontSize: 20,
             fontWeight: "bold",
@@ -59,23 +61,43 @@ export default function Index() {
           Welcome to the WeGoToCalStateLA application where you will be able to
           learn new and creative ways to manage your money and improve your
           well-being.
-        </Text>
+        </Text> */}
 
         {/* This is a button that will navigate to the signup page */}
         <TouchableOpacity style={styles.button}
-        onPress={()=>router.push('/authentication/signup')}>
-          <Text style={[styles.buttonText, {color: Colors.WHITE}]}>Signup</Text>
+          onPress={() => router.push('/authentication/signup')}>
+          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Signup</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, {
+          backgroundColor: Colors.PRIMARY,
+          borderWidth: 1,
+          borderColor: Colors.WHITE,
+        }]}
+          onPress={() => router.push('/authentication/login')}>
+          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Login</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={[styles.button,{
           backgroundColor: Colors.PRIMARY,
           borderWidth: 1,
           borderColor: Colors.WHITE,
           }]}
-          onPress={()=>router.push('/authentication/login')}>
-          <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Login</Text>
+          onPress={()=>router.push('/daily_check_in/daily')}>
+          <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Daily</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, {
+          backgroundColor: Colors.PRIMARY,
+          borderWidth: 1,
+          borderColor: Colors.WHITE,
+        }]}
+          onPress={() => router.push('/anim_test')}>
+          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Anim</Text>
+        </TouchableOpacity>
+
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
