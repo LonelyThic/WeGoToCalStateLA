@@ -5,111 +5,73 @@ import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
 export default function Index() {
-
-  {/* This is a hook that allows us to navigate to different pages */ }
   const router = useRouter();
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        padding: 25,
-        height: "100%",
-        backgroundColor: Colors.SECONDARY,
+    <SafeAreaView style={styles.container}>
+      <Image source={require('../assets/images/CSULA.png')} style={styles.logo} />
 
-      }}
-    >
-      <Image source={require('./../assets/images/CSULA.png')}
-        style={{
-          width: 360,
-          height: 400,
-          padding: 25,
-          alignSelf: 'center'
-        }}
-      />
-      <View
-        style={{
-          padding: 25,
-          backgroundColor: Colors.PRIMARY,
-          height: "50%",
-          borderTopLeftRadius: Corners.DEFAULT,
-          borderTopRightRadius: Corners.DEFAULT,
-          borderBottomLeftRadius: Corners.DEFAULT,
-          borderBottomRightRadius: Corners.DEFAULT,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 30,
-            fontWeight: "bold",
-            textAlign: "center",
-            color: Colors.WHITE,
-          }}
-        >
-          WeGoToCalStateLA
-        </Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>WeGoToCalStateLA</Text>
 
-        {/* <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: 20,
-            color: Colors.WHITE,
-          }}
-        >
-          Welcome to the WeGoToCalStateLA application where you will be able to
-          learn new and creative ways to manage your money and improve your
-          well-being.
-        </Text> */}
-
-        {/* This is a button that will navigate to the signup page */}
-        <TouchableOpacity style={styles.button}
-          onPress={() => router.push('/authentication/signup')}>
-          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Signup</Text>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/authentication/signup')}>
+          <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, {
-          backgroundColor: Colors.PRIMARY,
-          borderWidth: 1,
-          borderColor: Colors.WHITE,
-        }]}
-          onPress={() => router.push('/authentication/login')}>
-          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Login</Text>
+        <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push('/authentication/login')}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button,{
-          backgroundColor: Colors.PRIMARY,
-          borderWidth: 1,
-          borderColor: Colors.WHITE,
-          }]}
-          onPress={()=>router.push('/daily_check_in/daily')}>
-          <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Daily</Text>
+        {/* <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push('/daily_check_in/daily')}>
+          <Text style={styles.buttonText}>Daily</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, {
-          backgroundColor: Colors.PRIMARY,
-          borderWidth: 1,
-          borderColor: Colors.WHITE,
-        }]}
-          onPress={() => router.push('/anim_test')}>
-          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Anim</Text>
-        </TouchableOpacity>
-
+        <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push('/anim_test')}>
+          <Text style={styles.buttonText}>Anim</Text>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 25,
+    backgroundColor: Colors.SECONDARY,
+  },
+  logo: {
+    width: 320,
+    height: 360,
+    alignSelf: 'center',
+    padding: 25,
+  },
+  content: {
+    padding: 25,
+    backgroundColor: Colors.PRIMARY,
+    height: "50%",
+    borderRadius: Corners.DEFAULT,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: Colors.WHITE,
+  },
   button: {
     padding: 15,
     backgroundColor: Colors.BLACK,
     marginTop: 20,
     borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonOutline: {
+    backgroundColor: Colors.PRIMARY,
+    borderWidth: 1,
+    borderColor: Colors.WHITE,
   },
   buttonText: {
-    textAlign: "center",
     fontSize: 18,
-  }
+    color: Colors.WHITE,
+  },
 });

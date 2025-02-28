@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import React, { useState } from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -14,23 +13,36 @@ export default function Signup() {
   const [password, setPassword] = useState('');
 
   // Handle Signup
+  const validateEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
   const handleSignup = async () => {
     if (!username || !email || !password) {
       Alert.alert("Error", "All fields are required!");
       return;
     }
 
-    try {
-      // Create a new user object
-      const newUser = { username, email, password };
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Invalid email address!");
+      return;
+    }
 
-      // Save user to AsyncStorage
-      await AsyncStorage.setItem('user', JSON.stringify(newUser));
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long!");
+      return;
+    }
+
+    try {
+      /*
+      
+        Cognito Code Here
+      
+      */
 
       Alert.alert("Success", "Account created successfully!");
+      router.push('/authentication/login');
 
-      // Navigate to login screen
-      router.navigate('../authentication/login');
     } catch (error) {
       Alert.alert("Error", "Failed to create an account. Try again.");
     }
@@ -48,6 +60,7 @@ export default function Signup() {
         style={styles.textInput}
         value={username}
         onChangeText={setUsername}
+        autoCapitalize="none"
       />
       <TextInput
         placeholder='Email'
@@ -55,6 +68,7 @@ export default function Signup() {
         style={styles.textInput}
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
       />
       <TextInput
         placeholder='Password'
@@ -63,6 +77,7 @@ export default function Signup() {
         style={styles.textInput}
         value={password}
         onChangeText={setPassword}
+        autoCapitalize="none"
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSignup}>
@@ -71,7 +86,7 @@ export default function Signup() {
 
       <View style={styles.signInContainer}>
         <Text>Already have an account?</Text>
-        <Pressable onPress={() => router.navigate('../authentication/login')}>
+        <Pressable onPress={() => router.push('/authentication/login')}>
           <Text style={styles.signInText}> Sign In Here</Text>
         </Pressable>
       </View>
@@ -85,7 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 25,
-    backgroundColor: Colors.SECONDARY,
+    backgroundColor: Colors.CREAM,
     width: '100%',
   },
   logo: {

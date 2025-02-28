@@ -6,5 +6,7 @@ export default {
     RED: '#FF4D4D',     // Red color for sad mood
     ORANGE: '#FFA500',  // Orange color for neutral mood
     GREEN: '#4CAF50',   // Green color for happy mood
-    CREAM: '#F8E9B0'
+    CREAM: '#F8E9B0',
+    SAND: '#E6D5B8',
+    PASTEL: '#FAF3DD',
 };
