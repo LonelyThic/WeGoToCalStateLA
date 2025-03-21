@@ -1,34 +1,42 @@
 import { useRouter } from "expo-router";
 import React, { useState } from 'react';
-import { Alert, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 
-export default function ResetPassword() {
+export default function login_mfa() {
     const router = useRouter();
-    const [newPassword, setNewPassword] = useState('');
+    const [mfaCode, setMfaCode] = useState('');
 
-    const handleResetPassword = async () => {
-        if (!newPassword) {
-            Alert.alert("Error", "Please enter your new password!");
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            Alert.alert("Error", "Password must be at least 6 characters long.");
+    const handleVerifyResetMFA = async () => {
+        if (!mfaCode) {
+            Alert.alert("Error", "Please enter the verification code!");
             return;
         }
 
         try {
             /*
             
-              Cognito Forgot Password Submit Code Here
+              Cognito MFA Verification Code Here
             
             */
-            Alert.alert("Success", "Your password has been reset!");
-            router.replace('/authentication/reset_success'); // Redirect to success page
-
+            Alert.alert("Success", "MFA verified successfully!");
+            router.push('/home_screen/home');
         } catch (error) {
-            Alert.alert("Error", "Failed to reset password. Try again.");
+            Alert.alert("Error", "Invalid MFA code. Try again.");
+        }
+    };
+
+    const handleResendResetCode = async () => {
+        try {
+            /*
+            
+              Cognito Resend MFA Code Here
+            
+            */
+            Alert.alert("Success", "A new verification code has been sent.");
+        } catch (error) {
+            Alert.alert("Error", "Failed to resend the verification code.");
         }
     };
 
@@ -36,21 +44,35 @@ export default function ResetPassword() {
         <SafeAreaView style={styles.container}>
             <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-            <Text style={styles.title}>Enter New Password</Text>
+            <Text style={styles.title}>Enter MFA Code</Text>
 
             <TextInput
-                placeholder='New Password'
-                placeholderTextColor="#00000080"
+                placeholder='Enter Verification Code'
+                placeholderTextColor={Colors.L_GREY}
                 style={styles.textInput}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                secureTextEntry={true}
+                value={mfaCode}
+                onChangeText={setMfaCode}
+                keyboardType="numeric"
                 autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-                <Text style={styles.buttonText}>Reset Password</Text>
+            <TouchableOpacity style={styles.button} onPress={handleVerifyResetMFA}>
+                <Text style={styles.buttonText}>Verify Code</Text>
             </TouchableOpacity>
+
+            <View style={styles.resendContainer}>
+                <Text>Didn't receive a code?</Text>
+                <Pressable onPress={handleResendResetCode}>
+                    <Text style={styles.resendText}> Resend Code</Text>
+                </Pressable>
+            </View>
+
+            {/* <View style={styles.signInContainer}>
+                <Text>Remembered your password?</Text>
+                <Pressable onPress={() => router.push('/authentication/login')}>
+                    <Text style={styles.signInText}> Sign In Here</Text>
+                </Pressable>
+            </View> */}
         </SafeAreaView>
     );
 }
@@ -100,4 +122,22 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    resendContainer: {
+        flexDirection: 'row',
+        marginTop: 20,
+    },
+    resendText: {
+        color: Colors.PRIMARY,
+        fontWeight: 'bold',
+        marginLeft: 5,
+    },
+    // signInContainer: {
+    //     flexDirection: 'row',
+    //     marginTop: 20,
+    // },
+    // signInText: {
+    //     color: Colors.PRIMARY,
+    //     fontWeight: 'bold',
+    //     marginLeft: 5,
+    // },
 });

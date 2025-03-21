@@ -25,7 +25,7 @@ export default function ResetPassword() {
               Cognito Forgot Password Submit Code Here
             
             */
-            Alert.alert("Success", "Your password has been reset!");
+            // Alert.alert("Success", "Your password has been reset!");
             router.replace('/authentication/reset_success'); // Redirect to success page
 
         } catch (error) {
