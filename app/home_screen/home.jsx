@@ -37,11 +37,7 @@ export default function Home() {
       case "Check-In":
         return <MoodCheckIn />;
       case "Profile":
-        return (
-          <View style={styles.contentContainer}>
-            <Text style={styles.contentText}>This is your Profile</Text>
-          </View>
-        );
+        return <Setup />;
       case "Settings":
         return <Setup />;
       default:
@@ -59,10 +55,7 @@ export default function Home() {
         </View>
 
         {/* AI Chatbot Floating Button */}
-        <TouchableOpacity
-          style={styles.chatbotButton}
-          onPress={() => router.push("/chatbot")}
-        >
+        <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chat")}>
           <Ionicons name="chatbubble-ellipses" size={28} color={Colors.WHITE} />
         </TouchableOpacity>
 
@@ -84,10 +77,10 @@ export default function Home() {
             <Ionicons name="person" size={24} color={Colors.WHITE} />
             <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Settings")}>
+          {/* <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Settings")}>
             <Ionicons name="ellipsis-horizontal" size={24} color={Colors.WHITE} />
             <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Settings</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </SafeAreaView>
     </>

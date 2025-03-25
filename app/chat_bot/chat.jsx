@@ -12,7 +12,7 @@ const App = () => {
     <WheelPicker
       data={data}
       value={value}
-      onValueChanged={({item: {value}}) => setValue(value)}
+      onValueChanged={({ item: { value } }) => setValue(value)}
     />
   );
 };

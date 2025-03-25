@@ -32,9 +32,7 @@ export default function MoodCheckIn() {
   const animatedBackgroundStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: interpolateColor(
-        backgroundColor.value,
-        [0, 1, 2],
-        [Colors.RED, Colors.ORANGE, Colors.GREEN]
+        backgroundColor.value, [0, 1, 2], [Colors.RED, Colors.ORANGE, Colors.GREEN]
       ),
     };
   });
