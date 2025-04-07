@@ -1,13 +1,14 @@
 import { Ionicons } from "@expo/vector-icons"; // For chatbot icon
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
 import Setup from "../account_settings/setup";
 import { useTheme } from "../context/ThemeContext";
 import MoodCheckIn from "../daily_check_in/daily";
 import Resources from "../resources/resource";
+import Events from "./events";
 
 export default function Home() {
   const router = useRouter();
@@ -19,26 +20,12 @@ export default function Home() {
   const renderContent = () => {
     switch (activeTab) {
       case "Home":
-        return (
-          <View style={styles.mainContent}>
-            {/* Theme Toggle */}
-            <View style={styles.toggleContainer}>
-              <Switch value={theme !== "light"} onValueChange={toggleTheme} />
-            </View>
-
-            {/* Additional Home Content */}
-            <View style={styles.contentContainer}>
-              <Text style={styles.contentText}>Welcome to the Home Page</Text>
-            </View>
-          </View>
-        );
+        return <Events />;
       case "Resources":
         return <Resources />;
       case "Check-In":
         return <MoodCheckIn />;
       case "Profile":
-        return <Setup />;
-      case "Settings":
         return <Setup />;
       default:
         return null;
@@ -48,7 +35,7 @@ export default function Home() {
   return (
     <>
       {/* Protect top, left, and right safe areas so the nav bar sits flush at the bottom */}
-      <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["top", "left", "right"]}>
+      <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["left", "right", "bottom"]}>
         {/* Main content fills all space above the nav bar */}
         <View style={{ flex: 1 }}>
           {renderContent()}

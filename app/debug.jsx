@@ -19,9 +19,9 @@ export default function Debugging() {
                     <Text style={styles.buttonText}>Go to Login</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/account_setup")}>
+                {/* <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/account_setup")}>
                     <Text style={styles.buttonText}>Go to Account Setup</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/reset_password")}>
                     <Text style={styles.buttonText}>Go to Reset Password</Text>

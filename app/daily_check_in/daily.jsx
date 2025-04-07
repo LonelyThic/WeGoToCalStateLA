@@ -1,233 +1,333 @@
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Colors from "../../constant/Colors"; // Adjust import as needed
+import React, { useState } from 'react';
+import { Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '../../constant/Colors';
 
-export default function MoodCheckIn() {
-  const router = useRouter();
-  const backgroundColor = useSharedValue(0);
-  const selectedMood = useSharedValue(-1);
+const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
-  // Local state for display and history
-  const [selectedMoodLabel, setSelectedMoodLabel] = useState("");
-  const [moodHistory, setMoodHistory] = useState([]);
+function CustomDropdown({ label, options, selectedValue, onValueChange }) {
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // Mood options
-  const moods = [
-    { id: 1, label: "Sad", color: Colors.RED, emoji: "😢" },
-    { id: 2, label: "Neutral", color: Colors.ORANGE, emoji: "😐" },
-    { id: 3, label: "Happy", color: Colors.GREEN, emoji: "😊" },
-  ];
-
-  // Handle mood selection
-  const handleMoodPress = (index) => {
-    backgroundColor.value = withTiming(index, { duration: 500 });
-    selectedMood.value = index;
-    setSelectedMoodLabel(moods[index].label);
+  const handleSelect = (value) => {
+    onValueChange(value);
+    setModalVisible(false);
   };
-
-  // Animated background color based on selected mood
-  const animatedBackgroundStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(
-        backgroundColor.value, [0, 1, 2], [Colors.RED, Colors.ORANGE, Colors.GREEN]
-      ),
-    };
-  });
-
-  // Check if submission is allowed today
-  const canSubmitToday = () => {
-    const today = new Date().toISOString().split("T")[0];
-    const todaysSubmissions = moodHistory.filter(entry => entry.date.split("T")[0] === today);
-    if (todaysSubmissions.length === 0) {
-      return true; // New day: no submission yet
-    } else {
-      // If the latest submission for today isn't Sad or Neutral, disallow submission
-      const lastSubmission = todaysSubmissions[todaysSubmissions.length - 1];
-      if (lastSubmission.mood !== "Sad" && lastSubmission.mood !== "Neutral") {
-        return false;
-      }
-      return true;
-    }
-  };
-
-  // Submit mood with validation and optional reminder alert
-  const handleSubmitMood = () => {
-    if (!selectedMoodLabel) {
-      Alert.alert("Please select a mood first.");
-      return;
-    }
-
-    if (!canSubmitToday()) {
-      Alert.alert("Already submitted", "You have already checked in today.");
-      return;
-    }
-
-    // Create a new submission entry
-    const newEntry = {
-      date: new Date().toISOString(),
-      mood: selectedMoodLabel,
-    };
-
-    setMoodHistory(prev => [...prev, newEntry]);
-    Alert.alert("Mood submitted!", `You logged feeling ${selectedMoodLabel}.`);
-
-    // If the mood is Sad or Neutral, ask if they want a reminder later
-    if (selectedMoodLabel === "Sad" || selectedMoodLabel === "Neutral") {
-      Alert.alert(
-        "Reminder",
-        "It seems you're not feeling your best. Would you like to be reminded later to check in again?",
-        [
-          { text: "No", style: "cancel" },
-          {
-            text: "Yes", onPress: () => {
-              // Placeholder: integrate a notification scheduler (e.g., using expo-notifications)
-              Alert.alert("Notification scheduled", "We will remind you later.");
-            }
-          }
-        ]
-      );
-    }
-
-    // Reset selection and animated background
-    setSelectedMoodLabel("");
-    selectedMood.value = -1;
-    backgroundColor.value = withTiming(0, { duration: 500 });
-  };
-
-  // Nested component for mood button with scaling animation
-  const MoodButton = ({ mood, index }) => {
-    const animatedScaleStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            scale: selectedMood.value === index
-              ? withTiming(1.2, { duration: 300 })
-              : withTiming(1, { duration: 300 }),
-          },
-        ],
-      };
-    });
-
-    return (
-      <Pressable onPress={() => handleMoodPress(index)}>
-        <Animated.View style={[styles.moodButton, { backgroundColor: mood.color }, animatedScaleStyle]}>
-          <Text style={styles.moodText}>{mood.emoji}</Text>
-        </Animated.View>
-      </Pressable>
-    );
-  };
-
-  // Render a mood history item
-  const renderMoodItem = ({ item }) => {
-    const dateStr = item.date.split("T")[0];
-    return (
-      <View style={styles.historyItem}>
-        <Text style={styles.historyText}>{dateStr}</Text>
-        <Text style={styles.historyText}>{item.mood}</Text>
-      </View>
-    );
-  };
-
-  // Display last 7 submissions (most recent first)
-  const lastSevenEntries = moodHistory.slice(-7).reverse();
 
   return (
-    <SafeAreaView style={styles.safeContainer} edges={["top", "bottom"]}>
-      <Animated.View style={[StyleSheet.absoluteFill, animatedBackgroundStyle]} />
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>How are you feeling?</Text>
-        <View style={styles.moodContainer}>
-          {moods.map((mood, index) => (
-            <MoodButton key={mood.id} mood={mood} index={index} />
-          ))}
-        </View>
-        {selectedMoodLabel ? (
-          <Text style={styles.selectionText}>You selected {selectedMoodLabel}</Text>
-        ) : null}
-        <Pressable style={styles.submitButton} onPress={handleSubmitMood}>
-          <Text style={styles.submitButtonText}>Submit Mood</Text>
-        </Pressable>
-        {moodHistory.length > 0 && (
-          <>
-            <Text style={styles.historyTitle}>Last 7 Moods:</Text>
+    <View style={dropdownStyles.dropdownContainer}>
+      <Text style={dropdownStyles.dropdownLabel}>{label}</Text>
+      <TouchableOpacity
+        style={dropdownStyles.dropdownButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={dropdownStyles.dropdownButtonText}>
+          {selectedValue ? selectedValue : '-- Select --'}
+        </Text>
+      </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity style={dropdownStyles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <View style={dropdownStyles.modalContent}>
             <FlatList
-              data={lastSevenEntries}
-              keyExtractor={(_, idx) => idx.toString()}
-              renderItem={renderMoodItem}
-              style={{ marginTop: 10, width: "80%" }}
+              data={options}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={dropdownStyles.modalItem}
+                  onPress={() => handleSelect(item)}
+                >
+                  <Text style={dropdownStyles.modalItemText}>{item}</Text>
+                </TouchableOpacity>
+              )}
             />
-          </>
-        )}
-      </View>
-    </SafeAreaView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
+const dropdownStyles = StyleSheet.create({
+  dropdownContainer: {
+    marginBottom: 20,
   },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: Colors.WHITE,
-  },
-  moodContainer: {
-    flexDirection: "row",
-    gap: 20,
-    marginVertical: 20,
-  },
-  moodButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  moodText: {
-    fontSize: 40,
-  },
-  selectionText: {
-    fontSize: 20,
-    color: Colors.WHITE,
-    marginBottom: 10,
-  },
-  submitButton: {
-    backgroundColor: Colors.BLACK,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  submitButtonText: {
-    color: Colors.WHITE,
+  dropdownLabel: {
     fontSize: 18,
+    marginBottom: 5,
+    color: Colors.BLACK,
   },
-  historyTitle: {
-    marginTop: 20,
-    fontSize: 18,
-    color: Colors.WHITE,
-    fontWeight: "bold",
-  },
-  historyItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  dropdownButton: {
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY,
+    borderRadius: 10,
     padding: 10,
-    borderRadius: 6,
-    marginVertical: 4,
+    backgroundColor: Colors.WHITE,
   },
-  historyText: {
-    color: Colors.WHITE,
+  dropdownButtonText: {
     fontSize: 16,
+    color: Colors.BLACK,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: Colors.CREAM,
+    padding: 20,
+    borderRadius: 20,
+    width: '90%',
+    maxHeight: 300,
+  },
+  modalItem: {
+    paddingVertical: 10,
+  },
+  modalItemText: {
+    fontSize: 16,
+    color: Colors.BLACK,
+    textAlign: 'center',
+  },
+});
+
+const emotionData = {
+  Fear: {
+    options: ["Scared", "Terror", "Insecure", "Nervous", "Horror"],
+    subOptions: {
+      Scared: ["Helpless", "Frightened"],
+      Terror: ["Hysterical", "Panic"],
+      Insecure: ["Inadequate", "Inferior"],
+      Nervous: ["Anxious", "Worried"],
+      Horror: ["Dread", "Mortified"]
+    }
+  },
+  Anger: {
+    options: ["Rage", "Frustrated", "Hostile"],
+    subOptions: {
+      Rage: ["Furious", "Enraged"],
+      Frustrated: ["Irritated", "Annoyed"],
+      Hostile: ["Aggressive", "Antagonistic"]
+    }
+  },
+  Sadness: {
+    options: ["Depressed", "Lonely", "Hurt"],
+    subOptions: {
+      Depressed: ["Down", "Melancholic"],
+      Lonely: ["Isolated", "Abandoned"],
+      Hurt: ["Wounded", "Sorrowful"]
+    }
+  },
+  Surprise: {
+    options: ["Stunned", "Shocked", "Amazed"],
+    subOptions: {
+      Stunned: ["Overwhelmed", "Dazed"],
+      Shocked: ["Startled", "Taken aback"],
+      Amazed: ["Awed", "Inspired"]
+    }
+  },
+  Joy: {
+    options: ["Happy", "Cheerful", "Delighted"],
+    subOptions: {
+      Happy: ["Joyful", "Ecstatic"],
+      Cheerful: ["Sunny", "Upbeat"],
+      Delighted: ["Overjoyed", "Thrilled"]
+    }
+  },
+  Love: {
+    options: ["Romantic", "Passionate", "Tender"],
+    subOptions: {
+      Romantic: ["Loving", "Devoted"],
+      Passionate: ["Fervent", "Intense"],
+      Tender: ["Gentle", "Warm"]
+    }
+  }
+};
+
+const broadEmotionsOrder = ["Fear", "Anger", "Sadness", "Surprise", "Joy", "Love"];
+
+const colorsArray = [
+  Colors.CREAM,      // 0: Default background
+  "#FF9999",         // 1: Fear
+  "#FF6666",         // 2: Anger
+  "#6699FF",         // 3: Sadness
+  "#FFCC66",         // 4: Surprise
+  "#FFFF66",         // 5: Joy
+  "#FF99CC"          // 6: Love
+];
+
+const negativeEmotions = ["Fear", "Anger", "Sadness"];
+
+export default function RefineEmotion() {
+  const [broadEmotion, setBroadEmotion] = useState('');
+  const [midEmotion, setMidEmotion] = useState('');
+  const [subEmotion, setSubEmotion] = useState('');
+  const [logEntries, setLogEntries] = useState([]);
+
+  // Shared value for animated background color index
+  const bgIndex = useSharedValue(0);
+
+  // Animated style for background color
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        bgIndex.value,
+        [0, 1, 2, 3, 4, 5, 6],
+        colorsArray
+      )
+    };
+  });
+
+  const handleSubmit = () => {
+    if (!broadEmotion || !midEmotion || !subEmotion) {
+      Alert.alert("Error", "Please complete all selections.");
+      return;
+    }
+
+    const newEntry = {
+      broad: broadEmotion,
+      mid: midEmotion,
+      sub: subEmotion,
+      timestamp: new Date().toLocaleString()
+    };
+
+    setLogEntries(prev => [...prev, newEntry]);
+
+    Alert.alert(
+      "Emotion Selected",
+      `You selected: ${broadEmotion} > ${midEmotion} > ${subEmotion}`,
+      negativeEmotions.includes(broadEmotion)
+        ? [
+            { text: "OK" },
+            { text: "Check In Again", onPress: resetForm }
+          ]
+        : [{ text: "OK" }]
+    );
+
+    if (!negativeEmotions.includes(broadEmotion)) {
+      resetForm();
+    }
+  };
+
+  const resetForm = () => {
+    setBroadEmotion('');
+    setMidEmotion('');
+    setSubEmotion('');
+    bgIndex.value = withTiming(0, { duration: 500 });
+  };
+
+
+  return (
+    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle]}>
+      <Text style={refineStyles.header}>Daily Check In</Text>
+      
+      <CustomDropdown
+        label="Select Broad Emotion:"
+        options={Object.keys(emotionData)}
+        selectedValue={broadEmotion}
+        onValueChange={(value) => {
+          setBroadEmotion(value);
+          setMidEmotion('');
+          setSubEmotion('');
+          const index = broadEmotionsOrder.indexOf(value) + 1; // +1 since index 0 is default
+          bgIndex.value = withTiming(index, { duration: 500 });
+        }}
+      />
+
+      {broadEmotion ? (
+        <CustomDropdown
+          label="Select Specific Emotion:"
+          options={emotionData[broadEmotion].options}
+          selectedValue={midEmotion}
+          onValueChange={(value) => {
+            setMidEmotion(value);
+            setSubEmotion('');
+          }}
+        />
+      ) : null}
+
+      {midEmotion ? (
+        <CustomDropdown
+          label="Select Associated Emotion:"
+          options={emotionData[broadEmotion].subOptions[midEmotion]}
+          selectedValue={subEmotion}
+          onValueChange={(value) => setSubEmotion(value)}
+        />
+      ) : null}
+
+      <TouchableOpacity style={refineStyles.button} onPress={handleSubmit}>
+        <Text style={refineStyles.buttonText}>Submit Emotion</Text>
+      </TouchableOpacity>
+
+      {logEntries.length > 0 && (
+        <View style={refineStyles.logContainer}>
+          <Text style={refineStyles.logHeader}>Emotion Log:</Text>
+          <FlatList
+            data={logEntries}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Text style={refineStyles.logEntry}>
+                {item.timestamp}: {item.broad} {'>'} {item.mid} {'>'} {item.sub}
+              </Text>
+            )}
+          />
+        </View>
+      )}
+
+    </AnimatedSafeAreaView>
+  );
+}
+
+const refineStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 25,
+    backgroundColor: Colors.transparent,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: Colors.BLACK,
+  },
+  button: {
+    backgroundColor: Colors.PRIMARY,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: Colors.WHITE,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  logContainer: {
+    marginTop: 30,
+    backgroundColor: Colors.WHITE,
+    padding: 15,
+    borderRadius: 10,
+  },
+  logHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: Colors.BLACK,
+  },
+  logEntry: {
+    fontSize: 14,
+    color: Colors.BLACK,
+    marginBottom: 5,
   },
 });
