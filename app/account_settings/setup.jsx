@@ -1,13 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Checkbox from 'expo-checkbox';
 import { useRouter } from "expo-router";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
+import { useTheme } from '../context/ThemeContext';
 
 export default function Setup() {
     const router = useRouter();
-
+    const { theme, toggleTheme } = useTheme();
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
     // Define your available resource options
@@ -19,14 +21,26 @@ export default function Setup() {
     ];
 
     // Use an object to track which resources are selected
-    const [selectedResources, setSelectedResources] = useState({
-        "Mental Health": false,
-        "Financial Tips": false,
-        "Career Advice": false,
-        "Physical Well-Being": false,
-    });
+    const [selectedResources, setSelectedResources] = useState({});
 
-    const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+    useEffect(() => {
+        const loadStoredResources = async () => {
+            try {
+                const stored = await AsyncStorage.getItem("selectedResources");
+                if (stored) {
+                    setSelectedResources(JSON.parse(stored));
+                } else {
+                    const defaultState = {};
+                    resourceOptions.forEach(opt => defaultState[opt] = false);
+                    setSelectedResources(defaultState);
+                }
+            } catch (err) {
+                console.warn("Failed to load resources:", err);
+            }
+        };
+
+        loadStoredResources();
+    }, []);
 
     const toggleResource = (resourceName) => {
         setSelectedResources(prevState => ({
@@ -36,11 +50,10 @@ export default function Setup() {
     };
 
     const handleSavePreferences = async () => {
-        // Convert the selected resources object into an array of resource names
         const selected = resourceOptions.filter(resource => selectedResources[resource]);
 
         try {
-            // Save to your DB or AsyncStorage here if needed
+            await AsyncStorage.setItem("selectedResources", JSON.stringify(selectedResources));
             Alert.alert("Success", `Preferences saved!\nSelected Resources: ${selected.join(', ')}`);
             router.push('/home_screen/home');
         } catch (error) {
@@ -49,11 +62,11 @@ export default function Setup() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Account Setup</Text>
+        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+            <Text style={[styles.title, themeStyles[theme].title]}>Account Setup</Text>
 
             <View style={styles.settingRow}>
-                <Text style={styles.settingText}>Allow Notifications</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>Allow Notifications</Text>
                 <Switch
                     value={notificationsEnabled}
                     onValueChange={setNotificationsEnabled}
@@ -62,16 +75,25 @@ export default function Setup() {
             </View>
 
             <View style={styles.settingRow}>
-                <Text style={styles.settingText}>Enable Dark Mode</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>Enable Dark Mode</Text>
                 <Switch
-                    value={darkModeEnabled}
-                    onValueChange={setDarkModeEnabled}
-                    thumbColor={darkModeEnabled ? Colors.PRIMARY : Colors.GRAY}
+                    value={theme === "dark"}
+                    onValueChange={toggleTheme}
+                    thumbColor={theme === "dark" ? Colors.PRIMARY : Colors.GRAY}
+                />
+            </View>
+
+            <View style={styles.settingRow}>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>Enable High Contrast</Text>
+                <Switch
+                    value={theme === "high-contrast"}
+                    onValueChange={() => toggleTheme("high-contrast")}
+                    thumbColor={theme === "high-contrast" ? Colors.PRIMARY : Colors.GRAY}
                 />
             </View>
 
             <View style={styles.settingColumn}>
-                <Text style={styles.settingText}>Preferred Resources</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>Preferred Resources</Text>
                 {resourceOptions.map((resource) => (
                     <View key={resource} style={styles.checkboxRow}>
                         <Checkbox
@@ -79,13 +101,13 @@ export default function Setup() {
                             onValueChange={() => toggleResource(resource)}
                             color={selectedResources[resource] ? Colors.PRIMARY : undefined}
                         />
-                        <Text style={styles.checkboxLabel}>{resource}</Text>
+                        <Text style={[styles.checkboxLabel, themeStyles[theme].text]}>{resource}</Text>
                     </View>
                 ))}
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleSavePreferences}>
-                <Text style={styles.buttonText}>Save</Text>
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleSavePreferences}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Save</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
@@ -96,7 +118,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         padding: 25,
-        backgroundColor: Colors.CREAM,
     },
     title: {
         fontSize: 28,
@@ -120,7 +141,6 @@ const styles = StyleSheet.create({
     settingText: {
         fontSize: 18,
         marginBottom: 5,
-        color: Colors.BLACK,
     },
     checkboxRow: {
         flexDirection: "row",
@@ -130,7 +150,6 @@ const styles = StyleSheet.create({
     checkboxLabel: {
         marginLeft: 10,
         fontSize: 16,
-        color: Colors.BLACK,
     },
     button: {
         backgroundColor: Colors.PRIMARY,
@@ -145,3 +164,30 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
+
+const themeStyles = {
+    light: {
+        container: { backgroundColor: Colors.CREAM },
+        title: { color: Colors.BLACK },
+        textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+        button: { backgroundColor: Colors.PRIMARY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+    },
+    dark: {
+        container: { backgroundColor: Colors.M_CHAR },
+        title: { color: Colors.WHITE },
+        textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+        button: { backgroundColor: Colors.GRAY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.WHITE },
+    },
+    "high-contrast": {
+        container: { backgroundColor: "#000000" }, // Black Background
+        title: { color: "#FFFF00" }, // Yellow Title
+        textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
+        button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
+        buttonText: { color: "#000000" }, // Black Text for Contrast
+        text: { color: "#FFFF00" }, // Yellow Text
+    },
+};

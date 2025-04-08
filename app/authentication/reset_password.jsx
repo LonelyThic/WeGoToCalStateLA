@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
+import { useTheme } from "../context/ThemeContext";
 
 export default function ResetPassword() {
     const router = useRouter();
     const [newPassword, setNewPassword] = useState('');
+    const { theme } = useTheme();
 
     const handleResetPassword = async () => {
         if (!newPassword) {
@@ -34,27 +36,27 @@ export default function ResetPassword() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
             <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-            <Text style={styles.title}>Enter New Password</Text>
+            <Text style={[styles.title, themeStyles[theme].title]}>Enter New Password</Text>
 
             <TextInput
                 placeholder='New Password'
                 placeholderTextColor="#00000080"
-                style={styles.textInput}
+                style={[styles.textInput, themeStyles[theme].textInput]}
                 value={newPassword}
                 onChangeText={setNewPassword}
                 secureTextEntry={true}
                 autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-                <Text style={styles.buttonText}>Reset Password</Text>
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleResetPassword}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Reset Password</Text>
             </TouchableOpacity>
 
             <View style={styles.signInContainer}>
-                <Text>Remembered your password?</Text>
+                <Text style={themeStyles[theme].text}>Remembered your password?</Text>
                 <Pressable onPress={() => router.push('/authentication/login')}>
                     <Text style={styles.signInText}> Sign In Here</Text>
                 </Pressable>
@@ -118,3 +120,30 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
 });
+
+const themeStyles = {
+    light: {
+        container: { backgroundColor: Colors.CREAM },
+        title: { color: Colors.BLACK },
+        textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+        button: { backgroundColor: Colors.PRIMARY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+    },
+    dark: {
+        container: { backgroundColor: Colors.M_CHAR },
+        title: { color: Colors.WHITE },
+        textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+        button: { backgroundColor: Colors.GRAY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.WHITE },
+    },
+    "high-contrast": {
+        container: { backgroundColor: "#000000" }, // Black Background
+        title: { color: "#FFFF00" }, // Yellow Title
+        textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
+        button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
+        buttonText: { color: "#000000" }, // Black Text for Contrast
+        text: { color: "#FFFF00" }, // Yellow Text
+    },
+};

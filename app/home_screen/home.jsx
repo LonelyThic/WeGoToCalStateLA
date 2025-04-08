@@ -5,7 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
 import Setup from "../account_settings/setup";
-import { useTheme } from "../context/ThemeContext";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import MoodCheckIn from "../daily_check_in/daily";
 import Resources from "../resources/resource";
 import Events from "./events";
@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <ThemeProvider>
       {/* Protect top, left, and right safe areas so the nav bar sits flush at the bottom */}
       <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["left", "right", "bottom"]}>
         {/* Main content fills all space above the nav bar */}
@@ -64,13 +64,9 @@ export default function Home() {
             <Ionicons name="person" size={24} color={Colors.WHITE} />
             <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Settings")}>
-            <Ionicons name="ellipsis-horizontal" size={24} color={Colors.WHITE} />
-            <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Settings</Text>
-          </TouchableOpacity> */}
         </View>
       </SafeAreaView>
-    </>
+    </ThemeProvider>
   );
 }
 
@@ -150,6 +146,7 @@ const themeStyles = {
     container: { backgroundColor: Colors.CREAM },
     title: { color: Colors.BLACK },
     subtitle: { color: Colors.DARK_GRAY },
+    textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
     button: { backgroundColor: Colors.PRIMARY },
     buttonText: { color: Colors.WHITE },
     progressText: { color: Colors.DARK_GRAY },
@@ -160,6 +157,7 @@ const themeStyles = {
     container: { backgroundColor: Colors.M_CHAR },
     title: { color: Colors.WHITE },
     subtitle: { color: Colors.LIGHT_GRAY },
+    textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
     button: { backgroundColor: Colors.GRAY },
     buttonText: { color: Colors.WHITE },
     progressText: { color: Colors.LIGHT_GRAY },
@@ -170,6 +168,7 @@ const themeStyles = {
     container: { backgroundColor: "#000000" },
     title: { color: "#FFFF00" },
     subtitle: { color: "#FFFFFF" },
+    textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 },
     button: {
       backgroundColor: "#FFFF00",
       borderWidth: 2,

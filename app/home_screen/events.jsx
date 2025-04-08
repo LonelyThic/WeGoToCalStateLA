@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
+import { useTheme } from "../context/ThemeContext";
 
 const quotes = [
     "The only way to do great work is to love what you do. – Steve Jobs",
@@ -37,6 +38,7 @@ const RenderItem = ({ item }) => (
 
 export default function Events() {
     const [quote, setQuote] = useState("");
+    const { theme } = useTheme();
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -48,11 +50,11 @@ export default function Events() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, themeStyles.light.container]}>
-            <Text style={[styles.header, themeStyles.light.title]}>Daily Inspiration</Text>
-            <Text style={[styles.quote, themeStyles.light.text]}>{quote}</Text>
+        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+            <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
+            <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
 
-            <Text style={[styles.header, themeStyles.light.title]}>Upcoming Events</Text>
+            <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
             <FlatList
                 data={eventsData}
                 keyExtractor={(item) => item.id.toString()}
@@ -155,16 +157,25 @@ const themeStyles = {
     light: {
         container: { backgroundColor: Colors.CREAM },
         title: { color: Colors.BLACK },
+        textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+        button: { backgroundColor: Colors.PRIMARY },
+        buttonText: { color: Colors.WHITE },
         text: { color: Colors.BLACK },
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
         title: { color: Colors.WHITE },
+        textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+        button: { backgroundColor: Colors.GRAY },
+        buttonText: { color: Colors.WHITE },
         text: { color: Colors.WHITE },
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
         title: { color: "#FFFF00" },
+        textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 },
+        button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" },
+        buttonText: { color: "#000000" },
         text: { color: "#FFFF00" },
     },
 };

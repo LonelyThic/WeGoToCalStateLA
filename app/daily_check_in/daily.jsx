@@ -8,11 +8,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
+import { useTheme } from '../context/ThemeContext';
 
 const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
 function CustomDropdown({ label, options, selectedValue, onValueChange }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const { theme } = useTheme();
 
   const handleSelect = (value) => {
     onValueChange(value);
@@ -21,12 +23,12 @@ function CustomDropdown({ label, options, selectedValue, onValueChange }) {
 
   return (
     <View style={dropdownStyles.dropdownContainer}>
-      <Text style={dropdownStyles.dropdownLabel}>{label}</Text>
+      <Text style={[dropdownStyles.dropdownLabel, themeStyles[theme].text]}>{label}</Text>
       <TouchableOpacity
-        style={dropdownStyles.dropdownButton}
+        style={[dropdownStyles.dropdownButton, themeStyles[theme].textInput]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={dropdownStyles.dropdownButtonText}>
+        <Text style={[dropdownStyles.dropdownButtonText, themeStyles[theme].text]}>
           {selectedValue ? selectedValue : '-- Select --'}
         </Text>
       </TouchableOpacity>
@@ -37,7 +39,7 @@ function CustomDropdown({ label, options, selectedValue, onValueChange }) {
         onRequestClose={() => setModalVisible(false)}
       >
         <TouchableOpacity style={dropdownStyles.modalOverlay} onPress={() => setModalVisible(false)}>
-          <View style={dropdownStyles.modalContent}>
+        <View style={[dropdownStyles.modalContent, { backgroundColor: themeStyles[theme]?.textInput?.backgroundColor }]}>
             <FlatList
               data={options}
               keyExtractor={(item, index) => index.toString()}
@@ -46,7 +48,9 @@ function CustomDropdown({ label, options, selectedValue, onValueChange }) {
                   style={dropdownStyles.modalItem}
                   onPress={() => handleSelect(item)}
                 >
-                  <Text style={dropdownStyles.modalItemText}>{item}</Text>
+                  <Text style={[dropdownStyles.modalItemText, themeStyles[theme].text]}>
+                    {item}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
@@ -64,18 +68,14 @@ const dropdownStyles = StyleSheet.create({
   dropdownLabel: {
     fontSize: 18,
     marginBottom: 5,
-    color: Colors.BLACK,
   },
   dropdownButton: {
     borderWidth: 1,
-    borderColor: Colors.PRIMARY,
     borderRadius: 10,
     padding: 10,
-    backgroundColor: Colors.WHITE,
   },
   dropdownButtonText: {
     fontSize: 16,
-    color: Colors.BLACK,
   },
   modalOverlay: {
     flex: 1,
@@ -84,18 +84,17 @@ const dropdownStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    backgroundColor: Colors.CREAM,
     padding: 20,
     borderRadius: 20,
     width: '90%',
     maxHeight: 300,
+    backgroundColor: Colors.WHITE, // default light background
   },
   modalItem: {
     paddingVertical: 10,
   },
   modalItemText: {
-    fontSize: 16,
-    color: Colors.BLACK,
+    fontSize: 25,
     textAlign: 'center',
   },
 });
@@ -167,7 +166,35 @@ const colorsArray = [
 
 const negativeEmotions = ["Fear", "Anger", "Sadness"];
 
+const themeStyles = {
+  light: {
+    container: { backgroundColor: Colors.CREAM },
+    title: { color: Colors.BLACK },
+    text: { color: Colors.BLACK },
+    textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+    button: { backgroundColor: Colors.PRIMARY },
+    buttonText: { color: Colors.WHITE },
+  },
+  dark: {
+    container: { backgroundColor: Colors.M_CHAR },
+    title: { color: Colors.WHITE },
+    text: { color: Colors.WHITE },
+    textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+    button: { backgroundColor: Colors.GRAY },
+    buttonText: { color: Colors.WHITE },
+  },
+  "high-contrast": {
+    container: { backgroundColor: "#000000" },
+    title: { color: "#FFFF00" },
+    text: { color: "#FFFF00" },
+    textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 },
+    button: { backgroundColor: "#FFFF00" },
+    buttonText: { color: "#000000" },
+  },
+};
+
 export default function RefineEmotion() {
+  const { theme } = useTheme();
   const [broadEmotion, setBroadEmotion] = useState('');
   const [midEmotion, setMidEmotion] = useState('');
   const [subEmotion, setSubEmotion] = useState('');
@@ -227,8 +254,8 @@ export default function RefineEmotion() {
 
 
   return (
-    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle]}>
-      <Text style={refineStyles.header}>Daily Check In</Text>
+    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle, themeStyles[theme].container]}>
+      <Text style={[refineStyles.header, themeStyles[theme].title]}>Daily Check In</Text>
       
       <CustomDropdown
         label="Select Broad Emotion:"
@@ -264,18 +291,18 @@ export default function RefineEmotion() {
         />
       ) : null}
 
-      <TouchableOpacity style={refineStyles.button} onPress={handleSubmit}>
-        <Text style={refineStyles.buttonText}>Submit Emotion</Text>
+      <TouchableOpacity style={[refineStyles.button, themeStyles[theme].button]} onPress={handleSubmit}>
+        <Text style={[refineStyles.buttonText, themeStyles[theme].buttonText]}>Submit Emotion</Text>
       </TouchableOpacity>
 
       {logEntries.length > 0 && (
-        <View style={refineStyles.logContainer}>
-          <Text style={refineStyles.logHeader}>Emotion Log:</Text>
+        <View style={[refineStyles.logContainer, themeStyles[theme].container]}>
+          <Text style={[refineStyles.logHeader, themeStyles[theme].title]}>Emotion Log:</Text>
           <FlatList
             data={logEntries}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({ item }) => (
-              <Text style={refineStyles.logEntry}>
+              <Text style={[refineStyles.logEntry, themeStyles[theme].text]}>
                 {item.timestamp}: {item.broad} {'>'} {item.mid} {'>'} {item.sub}
               </Text>
             )}
@@ -315,7 +342,7 @@ const refineStyles = StyleSheet.create({
   },
   logContainer: {
     marginTop: 30,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: 'transparent',
     padding: 15,
     borderRadius: 10,
   },

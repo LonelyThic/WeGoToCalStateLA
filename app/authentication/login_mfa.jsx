@@ -1,11 +1,41 @@
+import { ThemeProvider } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
+import { useTheme } from "../context/ThemeContext";
+
+const themeStyles = {
+    light: {
+        container: { backgroundColor: Colors.CREAM },
+        title: { color: Colors.BLACK },
+        textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+        button: { backgroundColor: Colors.PRIMARY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+    },
+    dark: {
+        container: { backgroundColor: Colors.M_CHAR },
+        title: { color: Colors.WHITE },
+        textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+        button: { backgroundColor: Colors.GRAY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.WHITE },
+    },
+    "high-contrast": {
+        container: { backgroundColor: "#000000" }, // Black Background
+        title: { color: "#FFFF00" }, // Yellow Title
+        textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
+        button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
+        buttonText: { color: "#000000" }, // Black Text for Contrast
+        text: { color: "#FFFF00" }, // Yellow Text
+    },
+};
 
 export default function login_mfa() {
     const router = useRouter();
+    const { theme } = useTheme();
     const [mfaCode, setMfaCode] = useState('');
 
     const handleVerifyResetMFA = async () => {
@@ -41,39 +71,34 @@ export default function login_mfa() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <ThemeProvider>
+        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
             <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-            <Text style={styles.title}>Enter MFA Code</Text>
+            <Text style={[styles.title, themeStyles[theme].title]}>Enter MFA Code</Text>
 
             <TextInput
                 placeholder='Enter Verification Code'
                 placeholderTextColor={Colors.L_GREY}
-                style={styles.textInput}
+                style={[styles.textInput, themeStyles[theme].textInput]}
                 value={mfaCode}
                 onChangeText={setMfaCode}
                 keyboardType="numeric"
                 autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleVerifyResetMFA}>
-                <Text style={styles.buttonText}>Verify Code</Text>
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleVerifyResetMFA}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Verify Code</Text>
             </TouchableOpacity>
 
             <View style={styles.resendContainer}>
-                <Text>Didn't receive a code?</Text>
+                <Text style={themeStyles[theme].text}>Didn't receive a code?</Text>
                 <Pressable onPress={handleResendResetCode}>
-                    <Text style={styles.resendText}> Resend Code</Text>
+                    <Text style={[styles.resendText, themeStyles[theme].text]}> Resend Code</Text>
                 </Pressable>
             </View>
-
-            {/* <View style={styles.signInContainer}>
-                <Text>Remembered your password?</Text>
-                <Pressable onPress={() => router.push('/authentication/login')}>
-                    <Text style={styles.signInText}> Sign In Here</Text>
-                </Pressable>
-            </View> */}
         </SafeAreaView>
+        </ThemeProvider>
     );
 }
 
@@ -83,7 +108,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 25,
-        backgroundColor: Colors.CREAM,
         width: '100%',
     },
     logo: {
@@ -105,10 +129,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         borderRadius: 10,
         alignSelf: 'center',
-        backgroundColor: Colors.WHITE,
     },
     button: {
-        backgroundColor: Colors.PRIMARY,
         padding: 10,
         width: '100%',
         height: 60,
@@ -118,7 +140,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-        color: Colors.WHITE,
         fontSize: 20,
         fontWeight: 'bold',
     },
@@ -131,13 +152,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 5,
     },
-    // signInContainer: {
-    //     flexDirection: 'row',
-    //     marginTop: 20,
-    // },
-    // signInText: {
-    //     color: Colors.PRIMARY,
-    //     fontWeight: 'bold',
-    //     marginLeft: 5,
-    // },
 });

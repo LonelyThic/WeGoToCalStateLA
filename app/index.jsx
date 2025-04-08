@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeProvider } from '../app/context/ThemeContext';
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
@@ -19,34 +20,37 @@ export default function Index() {
   }, []);
 
   return (
-    <LinearGradient
-      colors={[Colors.PRIMARY, Colors.CREAM]} // Adjust gradient colors as needed
-      style={styles.container}
-    >
-      <SafeAreaView style={styles.container}>
-        <Animated.Image
-          source={require("../assets/images/P_Logo.png")}
-          style={[styles.logo, { opacity: fadeAnim }]}
-          resizeMode="contain"
-        />
+    <ThemeProvider>
+      <LinearGradient
+        colors={[Colors.PRIMARY, Colors.CREAM]} // Adjust gradient colors as needed
+        style={styles.container}
+      >
+        <SafeAreaView style={styles.container}>
+          <Animated.Image
+            source={require("../assets/images/P_Logo.png")}
+            style={[styles.logo, { opacity: fadeAnim }]}
+            resizeMode="contain"
+          />
 
-        <View style={styles.content}>
-          <Text style={styles.title}>WeGoToCalStateLA</Text>
+          <View style={styles.content}>
+            <Text style={styles.title}>WeGoToCalStateLA</Text>
 
-          <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/signup")}>
-            <Text style={styles.buttonText}>Signup</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/signup")}>
+              <Text style={styles.buttonText}>Signup</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/authentication/login")}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/authentication/login")}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/debug")}>
-            <Text style={styles.buttonText}>Debug</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+            <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/debug")}>
+              <Text style={styles.buttonText}>Debug</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </ThemeProvider>
+
   );
 }
 

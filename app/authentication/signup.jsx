@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 
 export default function Signup() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   // State to store input values
   const [username, setUsername] = useState('');
@@ -49,48 +51,50 @@ export default function Signup() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
+    <ThemeProvider>
+      <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+        <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-      <Text style={styles.title}>Create New Account</Text>
+        <Text style={[styles.title, themeStyles[theme].title]}>Create New Account</Text>
 
-      <TextInput
-        placeholder='Username'
-        placeholderTextColor="#00000080"
-        style={styles.textInput}
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder='Email'
-        placeholderTextColor="#00000080"
-        style={styles.textInput}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder='Password'
-        secureTextEntry={true}
-        placeholderTextColor="#00000080"
-        style={styles.textInput}
-        value={password}
-        onChangeText={setPassword}
-        autoCapitalize="none"
-      />
+        <TextInput
+          placeholder='Username'
+          placeholderTextColor="#00000080"
+          style={[styles.textInput, themeStyles[theme].textInput]}
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+        <TextInput
+          placeholder='Email'
+          placeholderTextColor="#00000080"
+          style={[styles.textInput, themeStyles[theme].textInput]}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+        <TextInput
+          placeholder='Password'
+          secureTextEntry={true}
+          placeholderTextColor="#00000080"
+          style={[styles.textInput, themeStyles[theme].textInput]}
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>Create Account</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleSignup}>
+          <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Create Account</Text>
+        </TouchableOpacity>
 
-      <View style={styles.signInContainer}>
-        <Text>Already have an account?</Text>
-        <Pressable onPress={() => router.push('/authentication/login')}>
-          <Text style={styles.signInText}> Sign In Here</Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
+        <View style={styles.signInContainer}>
+          <Text style={themeStyles[theme].text}>Already have an account?</Text>
+          <Pressable onPress={() => router.push('/authentication/login')}>
+            <Text style={[styles.signInText, themeStyles[theme].text]}> Sign In Here</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    </ThemeProvider>
   );
 }
 
@@ -150,3 +154,29 @@ const styles = StyleSheet.create({
   },
 });
 
+const themeStyles = {
+  light: {
+    container: { backgroundColor: Colors.CREAM },
+    title: { color: Colors.BLACK },
+    textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+    button: { backgroundColor: Colors.PRIMARY },
+    buttonText: { color: Colors.WHITE },
+    text: { color: Colors.BLACK },
+  },
+  dark: {
+    container: { backgroundColor: Colors.M_CHAR },
+    title: { color: Colors.WHITE },
+    textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+    button: { backgroundColor: Colors.GRAY },
+    buttonText: { color: Colors.WHITE },
+    text: { color: Colors.WHITE },
+  },
+  "high-contrast": {
+    container: { backgroundColor: "#000000" }, // Black Background
+    title: { color: "#FFFF00" }, // Yellow Title
+    textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
+    button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
+    buttonText: { color: "#000000" }, // Black Text for Contrast
+    text: { color: "#FFFF00" }, // Yellow Text
+  },
+};

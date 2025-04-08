@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 
 export default function verify_reset() {
     const router = useRouter();
+    const { theme } = useTheme();
     const [mfaCode, setMfaCode] = useState('');
 
     const handleVerifyResetMFA = async () => {
@@ -15,11 +17,6 @@ export default function verify_reset() {
         }
 
         try {
-            /*
-            
-              Cognito MFA Verification Code Here
-            
-            */
             Alert.alert("Success", "MFA verified successfully!");
             router.push('/authentication/reset_password');
         } catch (error) {
@@ -29,11 +26,6 @@ export default function verify_reset() {
 
     const handleResendResetCode = async () => {
         try {
-            /*
-            
-              Cognito Resend MFA Code Here
-            
-            */
             Alert.alert("Success", "A new verification code has been sent.");
         } catch (error) {
             Alert.alert("Error", "Failed to resend the verification code.");
@@ -41,39 +33,41 @@ export default function verify_reset() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
+        <ThemeProvider>
+            <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+                <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-            <Text style={styles.title}>Enter MFA Code</Text>
+                <Text style={[styles.title, themeStyles[theme].title]}>Enter MFA Code</Text>
 
-            <TextInput
-                placeholder='Enter Verification Code'
-                placeholderTextColor="#00000080"
-                style={styles.textInput}
-                value={mfaCode}
-                onChangeText={setMfaCode}
-                keyboardType="numeric"
-                autoCapitalize="none"
-            />
+                <TextInput
+                    placeholder='Enter Verification Code'
+                    placeholderTextColor={theme === "high-contrast" ? "#FFFF00" : theme === "dark" ? "#AAAAAA" : "#00000080"}
+                    style={[styles.textInput, themeStyles[theme].textInput]}
+                    value={mfaCode}
+                    onChangeText={setMfaCode}
+                    keyboardType="numeric"
+                    autoCapitalize="none"
+                />
 
-            <TouchableOpacity style={styles.button} onPress={handleVerifyResetMFA}>
-                <Text style={styles.buttonText}>Verify Code</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleVerifyResetMFA}>
+                    <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Verify Code</Text>
+                </TouchableOpacity>
 
-            <View style={styles.resendContainer}>
-                <Text>Didn't receive a code?</Text>
-                <Pressable onPress={handleResendResetCode}>
-                    <Text style={styles.resendText}> Resend Code</Text>
-                </Pressable>
-            </View>
+                <View style={styles.resendContainer}>
+                    <Text style={themeStyles[theme].text}>Didn't receive a code?</Text>
+                    <Pressable onPress={handleResendResetCode}>
+                        <Text style={styles.resendText}> Resend Code</Text>
+                    </Pressable>
+                </View>
 
-            <View style={styles.signInContainer}>
-                <Text>Remembered your password?</Text>
-                <Pressable onPress={() => router.push('/authentication/login')}>
-                    <Text style={styles.signInText}> Sign In Here</Text>
-                </Pressable>
-            </View>
-        </SafeAreaView>
+                <View style={styles.signInContainer}>
+                    <Text style={themeStyles[theme].text}>Remembered your password?</Text>
+                    <Pressable onPress={() => router.push('/authentication/login')}>
+                        <Text style={styles.signInText}> Sign In Here</Text>
+                    </Pressable>
+                </View>
+            </SafeAreaView>
+        </ThemeProvider>
     );
 }
 
@@ -141,3 +135,30 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
 });
+
+const themeStyles = {
+    light: {
+        container: { backgroundColor: Colors.CREAM },
+        title: { color: Colors.BLACK },
+        textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+        button: { backgroundColor: Colors.PRIMARY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+    },
+    dark: {
+        container: { backgroundColor: Colors.M_CHAR },
+        title: { color: Colors.WHITE },
+        textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
+        button: { backgroundColor: Colors.GRAY },
+        buttonText: { color: Colors.WHITE },
+        text: { color: Colors.WHITE },
+    },
+    "high-contrast": {
+        container: { backgroundColor: "#000000" }, // Black Background
+        title: { color: "#FFFF00" }, // Yellow Title
+        textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
+        button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
+        buttonText: { color: "#000000" }, // Black Text for Contrast
+        text: { color: "#FFFF00" }, // Yellow Text
+    },
+};

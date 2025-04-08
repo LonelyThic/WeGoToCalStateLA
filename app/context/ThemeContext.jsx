@@ -1,16 +1,35 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
-    const systemTheme = useColorScheme();
-    const [theme, setTheme] = useState(systemTheme || "light");
+const validThemes = ['light', 'dark', 'high-contrast'];
 
-    const toggleTheme = () => {
-        setTheme((prevTheme) =>
-            prevTheme === "light" ? "dark" : prevTheme === "dark" ? "high-contrast" : "light"
-        );
+export const ThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState('light'); // Default theme
+
+    useEffect(() => {
+        const loadStoredTheme = async () => {
+            const storedTheme = await AsyncStorage.getItem('theme');
+            if (storedTheme && validThemes.includes(storedTheme)) {
+                setTheme(storedTheme);
+            }
+        };
+
+        loadStoredTheme();
+    }, []);
+
+    const toggleTheme = (mode) => {
+        let newTheme;
+
+        if (mode && validThemes.includes(mode)) {
+            newTheme = mode;
+        } else {
+            newTheme = theme === 'light' ? 'dark' : 'light';
+        }
+
+        setTheme(newTheme);
+        AsyncStorage.setItem('theme', newTheme);
     };
 
     return (
@@ -20,5 +39,4 @@ export const ThemeProvider = ({ children }) => {
     );
 };
 
-// Custom hook for easy access to theme
 export const useTheme = () => useContext(ThemeContext);
