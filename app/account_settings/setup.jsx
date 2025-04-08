@@ -87,7 +87,9 @@ export default function Setup() {
                 <Text style={[styles.settingText, themeStyles[theme].text]}>Enable High Contrast</Text>
                 <Switch
                     value={theme === "high-contrast"}
-                    onValueChange={() => toggleTheme("high-contrast")}
+                    onValueChange={() =>
+                        toggleTheme(theme === "high-contrast" ? "light" : "high-contrast")
+                    }
                     thumbColor={theme === "high-contrast" ? Colors.PRIMARY : Colors.GRAY}
                 />
             </View>
@@ -109,6 +111,11 @@ export default function Setup() {
             <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleSavePreferences}>
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Save</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={() => router.replace('/')}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Log Out</Text>
+            </TouchableOpacity>
+
         </SafeAreaView>
     );
 }

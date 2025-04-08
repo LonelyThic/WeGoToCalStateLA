@@ -3,34 +3,32 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
-const validThemes = ['light', 'dark', 'high-contrast'];
-
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState('light'); // Default theme
-
-    useEffect(() => {
-        const loadStoredTheme = async () => {
-            const storedTheme = await AsyncStorage.getItem('theme');
-            if (storedTheme && validThemes.includes(storedTheme)) {
-                setTheme(storedTheme);
-            }
-        };
-
-        loadStoredTheme();
-    }, []);
+    const [theme, setTheme] = useState("light");
 
     const toggleTheme = (mode) => {
-        let newTheme;
+        const validThemes = ["light", "dark", "high-contrast"];
 
-        if (mode && validThemes.includes(mode)) {
-            newTheme = mode;
+        if (typeof mode === "string" && validThemes.includes(mode)) {
+            setTheme(mode);
+            AsyncStorage.setItem("theme", mode); // safe string
         } else {
-            newTheme = theme === 'light' ? 'dark' : 'light';
+            const next = theme === "light" ? "dark" : "light";
+            setTheme(next);
+            AsyncStorage.setItem("theme", next); // also safe
         }
-
-        setTheme(newTheme);
-        AsyncStorage.setItem('theme', newTheme);
     };
+
+    useEffect(() => {
+        AsyncStorage.getItem("theme").then((storedTheme) => {
+            const validThemes = ["light", "dark", "high-contrast"];
+            if (storedTheme && validThemes.includes(storedTheme)) {
+                setTheme(storedTheme);
+            } else {
+                setTheme("light"); // default fallback
+            }
+        });
+    }, []);
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
