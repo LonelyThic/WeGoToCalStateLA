@@ -1,5 +1,6 @@
 import React from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import Colors from '../../constant/Colors';
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
 
@@ -22,35 +23,23 @@ const RenderItem = ({ item }) => {
 
 export default function Resources() {
     const { theme } = useTheme();
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
+
     return (
         <ThemeProvider>
             <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-                <FlatList
+                <Carousel
+                    loop
+                    width={screenWidth * 1.03}
+                    height={screenHeight * 1.0}
+                    autoPlay={false}
                     data={data}
+                    scrollAnimationDuration={1000}
+                    mode="parallax"
+                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                    style={{ marginBottom: 20 }}
                     renderItem={({ item }) => <RenderItem item={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal
-                    bounces={true}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContainer} // No extra bottom padding here
-                />
-                <FlatList
-                    data={data}
-                    renderItem={({ item }) => <RenderItem item={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal
-                    bounces={true}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContainer} // No extra bottom padding here
-                />
-                <FlatList
-                    data={data}
-                    renderItem={({ item }) => <RenderItem item={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal
-                    bounces={true}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.lastScrollContainer} // Extra bottom padding only here
                 />
             </SafeAreaView>
         </ThemeProvider>
@@ -60,28 +49,21 @@ export default function Resources() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 25,
+        paddingHorizontal: 5,
+        paddingTop: 25,
         width: '100%',
         backgroundColor: Colors.CREAM,
     },
-    scrollContainer: {
-        paddingVertical: 20,
-        paddingLeft: 15,
-        // No bottom padding for intermediate FlatLists
-    },
-    lastScrollContainer: {
-        paddingVertical: 20,
-        paddingLeft: 15,
-        paddingBottom: 100, // Only the last FlatList gets the extra bottom padding
-    },
     item: {
-        width: 250,
+        width: '100%',
+        height: '75%',
         marginRight: 15,
         backgroundColor: Colors.SECONDARY,
         borderRadius: 12,
         padding: 20,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'stretch',
+        alignSelf: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowOffset: { width: 0, height: 2 },
