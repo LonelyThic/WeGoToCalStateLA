@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { Stack } from 'expo-router';
+import React, { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function AskUsScreen() {
   // keep track of messages (and giving preliminary messages)
@@ -93,7 +93,7 @@ export default function AskUsScreen() {
                 <View style={styles.logoContainer}>
                   <Image 
                   // goes into images for CSULA
-                    source={require('./../assets/images/CSULA.png')} 
+                    source={require('../../assets/images/CSULA.png')} 
                     style={styles.logo} 
                   />
                 </View>
