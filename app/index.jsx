@@ -1,8 +1,13 @@
+import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
+
 export default function Index() {
+  
+  const router = useRouter(); {/* This is a hook that allows us to navigate to different pages */}
+
   return (
     <View
       style={{
@@ -56,14 +61,17 @@ export default function Index() {
           well-being.
         </Text>
 
-        <TouchableOpacity style={styles.button}>
+        {/* This is a button that will navigate to the signup page */}
+        <TouchableOpacity style={styles.button}
+        onPress={()=>router.push('/authentication/signup')}>
           <Text style={[styles.buttonText, {color: Colors.WHITE}]}>Signup</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button,{
           backgroundColor: Colors.PRIMARY,
           borderWidth: 1,
           borderColor: Colors.WHITE,
-          }]}>
+          }]}
+          onPress={()=>router.push('/authentication/login')}>
           <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Login</Text>
         </TouchableOpacity>
       </View>
