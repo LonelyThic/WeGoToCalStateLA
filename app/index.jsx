@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Image, Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeProvider } from '../app/context/ThemeContext';
 
@@ -52,22 +52,6 @@ export default function Index() {
         </SafeAreaView>
       </LinearGradient>
     </ThemeProvider>
-
-        {/* This is a button that will navigate to the signup page */}
-        <TouchableOpacity style={styles.button}
-        onPress={()=>router.push('/authentication/signup')}>
-          <Text style={[styles.buttonText, {color: Colors.WHITE}]}>Signup</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button,{
-          backgroundColor: Colors.PRIMARY,
-          borderWidth: 1,
-          borderColor: Colors.WHITE,
-          }]}
-          onPress={()=>router.push('/authentication/login')}>
-          <Text style={[styles.buttonText,{color: Colors.WHITE}]}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
   );
 }
 

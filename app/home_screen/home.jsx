@@ -42,7 +42,7 @@ export default function Home() {
         </View>
 
         {/* AI Chatbot Floating Button */}
-        <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chat")}>
+        <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chatbotui")}>
           <Ionicons name="chatbubble-ellipses" size={28} color={Colors.WHITE} />
         </TouchableOpacity>
 
