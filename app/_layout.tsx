@@ -1,11 +1,15 @@
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
+import { ThemeProvider } from "./context/ThemeContext";
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{
-      headerShown: false
-    }}>
-
-    </Stack>
+    <ThemeProvider>
+      <Slot
+        screenOptions={{
+          headerShown: false,
+          gestureEnabled: true,
+        }}
+      />
+    </ThemeProvider>
   );
 }
