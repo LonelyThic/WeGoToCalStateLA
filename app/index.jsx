@@ -1,65 +1,57 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Image, Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeProvider } from '../app/context/ThemeContext';
+
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
 
 export default function Index() {
-  
-  const router = useRouter(); {/* This is a hook that allows us to navigate to different pages */}
+  const router = useRouter();
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity: 0
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1, // Fade in to full opacity
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        padding: 25,
-        height: "100%",
-        backgroundColor: Colors.SECONDARY,
-
-      }}
-    >
-      <Image source={require('./../assets/images/CSULA.png')} 
-      style={{
-        width: '100%',
-        height: '50%',
-        padding: 25,
-        alignSelf: 'center'}}
-      />
-      <View
-        style={{
-          padding: 25,
-          backgroundColor: Colors.PRIMARY,
-          height: "50%",
-          borderTopLeftRadius: Corners.DEFAULT,
-          borderTopRightRadius: Corners.DEFAULT,
-          borderBottomLeftRadius: Corners.DEFAULT,
-          borderBottomRightRadius: Corners.DEFAULT,
-        }}
+    <ThemeProvider>
+      <LinearGradient
+        colors={[Colors.PRIMARY, Colors.CREAM]} // Adjust gradient colors as needed
+        style={styles.container}
       >
-        <Text
-          style={{
-            fontSize: 30,
-            fontWeight: "bold",
-            textAlign: "center",
-            color: Colors.WHITE,
-          }}
-        >
-          WeGoToCalStateLA
-        </Text>
+        <SafeAreaView style={styles.container}>
+          <Animated.Image
+            source={require("../assets/images/P_Logo.png")}
+            style={[styles.logo, { opacity: fadeAnim }]}
+            resizeMode="contain"
+          />
 
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: 20,
-            color: Colors.WHITE,
-          }}
-        >
-          Welcome to the WeGoToCalStateLA application where you will be able to
-          learn new and creative ways to manage your money and improve your
-          well-being.
-        </Text>
+          <View style={styles.content}>
+            <Text style={styles.title}>WeGoToCalStateLA</Text>
+
+            <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/signup")}>
+              <Text style={styles.buttonText}>Signup</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/authentication/login")}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/debug")}>
+              <Text style={styles.buttonText}>Debug</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </ThemeProvider>
 
         {/* This is a button that will navigate to the signup page */}
         <TouchableOpacity style={styles.button}
@@ -80,14 +72,44 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  logo: {
+    width: 320,
+    height: 360,
+    alignSelf: "center",
+    marginVertical: 20,
+  },
+  content: {
+    padding: 25,
+    backgroundColor: Colors.PRIMARY,
+    height: "50%",
+    borderRadius: Corners.DEFAULT,
+    marginHorizontal: 25,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: Colors.WHITE,
+    marginBottom: 20,
+  },
   button: {
     padding: 15,
     backgroundColor: Colors.BLACK,
     marginTop: 20,
     borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonOutline: {
+    backgroundColor: Colors.PRIMARY,
+    borderWidth: 1,
+    borderColor: Colors.WHITE,
   },
   buttonText: {
-    textAlign: "center",
     fontSize: 18,
-  }
+    color: Colors.WHITE,
+  },
 });
