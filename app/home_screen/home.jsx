@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons"; // For chatbot icon
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { SafeAreaView as RNSafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
 import Setup from "../account_settings/setup";
 import { useTheme } from "../context/ThemeContext";
@@ -10,15 +11,34 @@ import MoodCheckIn from "../daily_check_in/daily";
 import Resources from "../resources/resource";
 import Events from "./events";
 
+const AnimatedSafeAreaView = Animated.createAnimatedComponent(RNSafeAreaView);
+
 export default function Home() {
   const router = useRouter();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const [displayedTab, setDisplayedTab] = useState("Home");
   const [activeTab, setActiveTab] = useState("Home");
+
+  const fadeAnim = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: fadeAnim.value,
+    };
+  });
+
+  const handleTabChange = (tab) => {
+    fadeAnim.value = withTiming(0, { duration: 90 }, () => {
+      runOnJS(setDisplayedTab)(tab); // Delay switching content
+      fadeAnim.value = withTiming(1, { duration: 90 });
+    });
+    setActiveTab(tab); // Update immediately for UI state (e.g., button highlighting)
+  };
 
   // Function to render the content based on the active tab
   const renderContent = () => {
-    switch (activeTab) {
+    switch (displayedTab) {
       case "Home":
         return <Events />;
       case "Resources":
@@ -33,11 +53,20 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["left", "right", "bottom"]}>
-      {/* Main content fills all space above the nav bar */}
-      <View style={{ flex: 1 }}>
+    <AnimatedSafeAreaView
+      style={[
+        styles.container,
+        themeStyles[theme].container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        },
+      ]}
+      edges={["left", "right"]}
+    >
+      <Animated.View style={[{ flex: 1 }, animatedStyle]}>
         {renderContent()}
-      </View>
+      </Animated.View>
 
       {/* AI Chatbot Floating Button */}
       <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chatbotui")}>
@@ -45,25 +74,25 @@ export default function Home() {
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}
-      <View style={[styles.navBar, themeStyles[theme].navBar, { paddingBottom: insets.bottom }]}>
-        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Home")}>
+      <View style={[styles.navBar, themeStyles[theme].navBar]}>
+        <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Home")}>
           <Ionicons name="home" size={24} color={Colors.WHITE} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Resources")}>
+        <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Resources")}>
           <Ionicons name="book" size={24} color={Colors.WHITE} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Resources</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Check-In")}>
+        <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Check-In")}>
           <Ionicons name="checkmark-circle" size={24} color={Colors.WHITE} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Check-In</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Profile")}>
+        <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Profile")}>
           <Ionicons name="person" size={24} color={Colors.WHITE} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </AnimatedSafeAreaView>
   );
 }
 
