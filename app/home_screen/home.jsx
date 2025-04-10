@@ -5,14 +5,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
 import Setup from "../account_settings/setup";
-import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/ThemeContext";
 import MoodCheckIn from "../daily_check_in/daily";
 import Resources from "../resources/resource";
 import Events from "./events";
 
 export default function Home() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("Home");
 
@@ -33,40 +33,37 @@ export default function Home() {
   };
 
   return (
-    <ThemeProvider>
-      {/* Protect top, left, and right safe areas so the nav bar sits flush at the bottom */}
-      <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["left", "right", "bottom"]}>
-        {/* Main content fills all space above the nav bar */}
-        <View style={{ flex: 1 }}>
-          {renderContent()}
-        </View>
+    <SafeAreaView style={[styles.container, themeStyles[theme].container]} edges={["left", "right", "bottom"]}>
+      {/* Main content fills all space above the nav bar */}
+      <View style={{ flex: 1 }}>
+        {renderContent()}
+      </View>
 
-        {/* AI Chatbot Floating Button */}
-        <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chatbotui")}>
-          <Ionicons name="chatbubble-ellipses" size={28} color={Colors.WHITE} />
+      {/* AI Chatbot Floating Button */}
+      <TouchableOpacity style={styles.chatbotButton} onPress={() => router.push("../chat_bot/chatbotui")}>
+        <Ionicons name="chatbubble-ellipses" size={28} color={Colors.WHITE} />
+      </TouchableOpacity>
+
+      {/* Bottom Navigation Bar */}
+      <View style={[styles.navBar, themeStyles[theme].navBar, { paddingBottom: insets.bottom }]}>
+        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Home")}>
+          <Ionicons name="home" size={24} color={Colors.WHITE} />
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Home</Text>
         </TouchableOpacity>
-
-        {/* Bottom Navigation Bar */}
-        <View style={[styles.navBar, themeStyles[theme].navBar, { paddingBottom: insets.bottom }]}>
-          <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Home")}>
-            <Ionicons name="home" size={24} color={Colors.WHITE} />
-            <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Resources")}>
-            <Ionicons name="book" size={24} color={Colors.WHITE} />
-            <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Resources</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Check-In")}>
-            <Ionicons name="checkmark-circle" size={24} color={Colors.WHITE} />
-            <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Check-In</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Profile")}>
-            <Ionicons name="person" size={24} color={Colors.WHITE} />
-            <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </ThemeProvider>
+        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Resources")}>
+          <Ionicons name="book" size={24} color={Colors.WHITE} />
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Resources</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Check-In")}>
+          <Ionicons name="checkmark-circle" size={24} color={Colors.WHITE} />
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Check-In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={() => setActiveTab("Profile")}>
+          <Ionicons name="person" size={24} color={Colors.WHITE} />
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 

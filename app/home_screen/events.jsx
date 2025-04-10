@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
@@ -7,7 +9,7 @@ import { useTheme } from "../context/ThemeContext";
 const quotes = [
     "The only way to do great work is to love what you do. – Steve Jobs",
     "Believe you can and you're halfway there. – Theodore Roosevelt",
-    "Success is not final, failure is not fatal: It is the courage to continue that counts. – Winston Churchill",
+    "Success is not final, failure is not fatal: It Is the courage to continue that counts. – Winston Churchill",
     "The future belongs to those who believe in the beauty of their dreams. – Eleanor Roosevelt",
     "Your time is limited, so don’t waste it living someone else’s life. – Steve Jobs",
 ];
@@ -39,6 +41,9 @@ const RenderItem = ({ item }) => (
 export default function Events() {
     const [quote, setQuote] = useState("");
     const { theme } = useTheme();
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
+    const router = useRouter();
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -46,7 +51,7 @@ export default function Events() {
     }, []);
 
     const handleQuizzesPress = () => {
-        Alert.alert("Quizzes", "This button currently does nothing.");
+        router.push('/quizzes'); // Replace with actual route
     };
 
     return (
@@ -55,24 +60,21 @@ export default function Events() {
             <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
-            <FlatList
+            <Carousel
+                loop
+                width={screenWidth * 1.03}
+                height={300}
+                autoPlay={false}
                 data={eventsData}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={RenderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalScrollContainer}
-                style={styles.eventsList}
+                scrollAnimationDuration={1000}
+                mode="parallax"
+                modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                style={{ marginBottom: 20 }}
+                renderItem={({ item }) => <RenderItem item={item} />}
             />
-            <FlatList
-                data={eventsData}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={RenderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalScrollContainer}
-                style={styles.eventsList}
-            />
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }
@@ -95,16 +97,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
-    eventsList: {
-        width: '100%',
-        marginBottom: 40, // Provides extra space below the event cards
-    },
-    horizontalScrollContainer: {
-        paddingVertical: 10,
-        paddingLeft: 15,
-    },
     eventCard: {
-        width: 250,
+        width: Dimensions.get('window').width * 0.9,
         height: 300,
         borderRadius: 10,
         backgroundColor: Colors.SECONDARY,

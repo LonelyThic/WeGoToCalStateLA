@@ -1,7 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AskUsScreen() {
   // keep track of messages (and giving preliminary messages)
