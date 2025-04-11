@@ -39,13 +39,10 @@ export default function Debugging() {
                     <Text style={styles.buttonText}>Go to Setup</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => router.push("/chat_bot/chat")}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/chat_bot/chatbotui")}>
                     <Text style={styles.buttonText}>Go to Chat</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => router.push("/user_profile/profile")}>
-                    <Text style={styles.buttonText}>Go to Profile</Text>
-                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );

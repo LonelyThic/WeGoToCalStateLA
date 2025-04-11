@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import Colors from '../../constant/Colors';
-import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/ThemeContext";
 
 const data = [
     { id: 1, title: "Mental Health", description: "Tips and resources for your mental well-being." },
@@ -24,46 +24,44 @@ const RenderItem = ({ item }) => {
 export default function Resources() {
     const { theme } = useTheme();
     const screenWidth = Dimensions.get('window').width;
-    const screenHeight = Dimensions.get('window').height;
 
     return (
-        <ThemeProvider>
-            <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-                <Carousel
-                    loop
-                    width={screenWidth * 1.03}
-                    height={screenHeight * 1.0}
-                    autoPlay={false}
-                    data={data}
-                    scrollAnimationDuration={1000}
-                    mode="parallax"
-                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
-                    style={{ marginBottom: 20 }}
-                    renderItem={({ item }) => <RenderItem item={item} />}
-                />
-            </SafeAreaView>
-        </ThemeProvider>
+        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+            <View style={{ paddingHorizontal: 25 }}>
+                <Text style={[styles.header, themeStyles[theme].title]}>Resources</Text>
+            </View>
+            <Carousel
+                loop
+                width={screenWidth}
+                height={700}
+                autoPlay={false}
+                data={data}
+                scrollAnimationDuration={1000}
+                mode="parallax"
+                modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                style={{ marginBottom: 20 }}
+                renderItem={({ item }) => <RenderItem item={item} />}
+            />
+        </SafeAreaView>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 5,
-        paddingTop: 25,
         width: '100%',
         backgroundColor: Colors.CREAM,
     },
     item: {
-        width: '100%',
-        height: '75%',
-        marginRight: 15,
+        width: Dimensions.get('window').width,
+        height: 700,
         backgroundColor: Colors.SECONDARY,
         borderRadius: 12,
-        padding: 20,
+        paddingTop: 20,
+        paddingHorizontal: 25,
         justifyContent: 'center',
-        alignItems: 'stretch',
-        alignSelf: 'center',
+        alignItems: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowOffset: { width: 0, height: 2 },
@@ -79,6 +77,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#fff',
         marginTop: 5,
+    },
+    header: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 15,
+        marginTop: 25,
     },
 });
 

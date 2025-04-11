@@ -1,9 +1,9 @@
 import { useRouter } from "expo-router";
 import React, { useState } from 'react';
-import { Alert, Image, Pressable, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
-import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Login() {
   const router = useRouter();
@@ -26,55 +26,53 @@ export default function Login() {
   };
 
   return (
-    <ThemeProvider>
-      <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-        <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
+    <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+      <Image source={require('../../assets/images/CSULA.png')} style={styles.logo} />
 
-        <Text style={[styles.title, themeStyles[theme].title]}>Welcome Back!</Text>
+      <Text style={[styles.title, themeStyles[theme].title]}>Welcome Back!</Text>
 
-        <TextInput
-          placeholder='Username'
-          placeholderTextColor={theme === "high-contrast" ? "#FFFF00" : theme === "dark" ? "#AAAAAA" : "#00000080"}
-          style={[styles.textInput, themeStyles[theme].textInput]}
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder='Password'
-          secureTextEntry={true}
-          placeholderTextColor={theme === "high-contrast" ? "#FFFF00" : theme === "dark" ? "#AAAAAA" : "#00000080"}
-          style={[styles.textInput, themeStyles[theme].textInput]}
-          value={password}
-          onChangeText={setPassword}
-          autoCapitalize="none"
-        />
+      <TextInput
+        placeholder='Username'
+        placeholderTextColor={theme === "high-contrast" ? "#FFFF00" : theme === "dark" ? "#AAAAAA" : "#00000080"}
+        style={[styles.textInput, themeStyles[theme].textInput]}
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      <TextInput
+        placeholder='Password'
+        secureTextEntry={true}
+        placeholderTextColor={theme === "high-contrast" ? "#FFFF00" : theme === "dark" ? "#AAAAAA" : "#00000080"}
+        style={[styles.textInput, themeStyles[theme].textInput]}
+        value={password}
+        onChangeText={setPassword}
+        autoCapitalize="none"
+      />
 
-        <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleLogin}>
-          <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Login</Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleLogin}>
+        <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Login</Text>
+      </TouchableOpacity>
 
-        <View style={styles.signUpContainer}>
-          <Text style={themeStyles[theme].text}>Don't have an account?</Text>
-          <Pressable onPress={() => router.push('/authentication/signup')}>
-            <Text style={styles.signUpText}> Sign Up Here</Text>
-          </Pressable>
-        </View>
+      <View style={styles.signUpContainer}>
+        <Text style={themeStyles[theme].text}>Don't have an account?</Text>
+        <Pressable onPress={() => router.push('/authentication/signup')}>
+          <Text style={styles.signUpText}> Sign Up Here</Text>
+        </Pressable>
+      </View>
 
-        <View style={styles.signUpContainer}>
-          <Text style={themeStyles[theme].text}>Forgot your password?</Text>
-          <Pressable onPress={() => router.push('/authentication/verify_email')}>
-            <Text style={styles.signUpText}> Reset Password Here</Text>
-          </Pressable>
-        </View>
+      <View style={styles.signUpContainer}>
+        <Text style={themeStyles[theme].text}>Forgot your password?</Text>
+        <Pressable onPress={() => router.push('/authentication/verify_email')}>
+          <Text style={styles.signUpText}> Reset Password Here</Text>
+        </Pressable>
+      </View>
 
-        {/* Toggle Button for Theme (Light -> Dark -> High Contrast) */}
-        <View style={styles.toggleContainer}>
+      {/* Toggle Button for Theme (Light -> Dark -> High Contrast) */}
+      {/* <View style={styles.toggleContainer}>
           <Text style={[styles.text, themeStyles[theme].text]}>Toggle Theme</Text>
           <Switch value={theme !== "light"} onValueChange={toggleTheme} />
-        </View>
-      </SafeAreaView>
-    </ThemeProvider>
+        </View> */}
+    </SafeAreaView>
   );
 }
 
