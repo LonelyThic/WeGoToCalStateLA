@@ -37,10 +37,15 @@
     "expo-symbols": "~0.2.2",
     "expo-system-ui": "~4.0.8",
     "expo-web-browser": "~14.0.2",
+<<<<<<< Updated upstream
 
     "i18next": "^24.2.3",
     "jest-expo": "~52.0.5",
     "lottie-react-native": "7.1.0",
+=======
+    "jest-expo": "~52.0.5",
+    "lottie-react-native": "^7.1.0",
+>>>>>>> Stashed changes
     "nativewind": "^4.1.23",
     "react": "18.3.1",
     "react-dom": "18.3.1",
