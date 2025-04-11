@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@lottiefiles/dotlottie-react": "^0.6.5",
     "@quidone/react-native-wheel-picker": "^1.4.0",
     "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-picker/picker": "^2.11.0",
@@ -36,9 +37,14 @@
     "expo-symbols": "~0.2.2",
     "expo-system-ui": "~4.0.8",
     "expo-web-browser": "~14.0.2",
+<<<<<<< Updated upstream
     "i18next": "^24.2.3",
     "jest-expo": "~52.0.5",
     "lottie-react-native": "7.1.0",
+=======
+    "jest-expo": "~52.0.5",
+    "lottie-react-native": "^7.1.0",
+>>>>>>> Stashed changes
     "nativewind": "^4.1.23",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -55,7 +61,12 @@
     "react-native-svg": "15.8.0",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-web": "~0.19.13",
+<<<<<<< Updated upstream
     "react-native-webview": "13.12.5"
+=======
+    "react-native-webview": "13.12.5",
+    "@react-native-community/slider": "4.5.5"
+>>>>>>> Stashed changes
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
