@@ -2,25 +2,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Checkbox from 'expo-checkbox';
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { useTheme } from '../context/ThemeContext';
+import i18n from '../i18n';
 
 export default function Setup() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const { t } = useTranslation();
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+    const [language, setLanguage] = useState(i18n.language || 'en');
 
-    // Define your available resource options
+    const toggleLanguage = () => {
+        const newLang = language === 'en' ? 'es' : 'en';
+        setLanguage(newLang);
+        i18n.changeLanguage(newLang);
+    };
+
     const resourceOptions = [
-        "Mental Health",
-        "Financial Tips",
-        "Career Advice",
-        "Physical Well-Being"
+        t("Mental Health"),
+        t("Financial Tips"),
+        t("Career Advice"),
+        t("Physical Well-Being")
     ];
 
-    // Use an object to track which resources are selected
     const [selectedResources, setSelectedResources] = useState({});
 
     useEffect(() => {
@@ -54,19 +62,19 @@ export default function Setup() {
 
         try {
             await AsyncStorage.setItem("selectedResources", JSON.stringify(selectedResources));
-            Alert.alert("Success", `Preferences saved!\nSelected Resources: ${selected.join(', ')}`);
+            Alert.alert(t("Success"), `${t("Preferences saved!")}\n${t("Selected Resources")}: ${selected.join(', ')}`);
             router.push('/home_screen/home');
         } catch (error) {
-            Alert.alert("Error", "Failed to save preferences. Try again.");
+            Alert.alert(t("Error"), t("Failed to save preferences. Try again."));
         }
     };
 
     return (
         <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-            <Text style={[styles.title, themeStyles[theme].title]}>Account Setup</Text>
+            <Text style={[styles.title, themeStyles[theme].title]}>{t("Account Setup")}</Text>
 
             <View style={styles.settingRow}>
-                <Text style={[styles.settingText, themeStyles[theme].text]}>Allow Notifications</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>{t("Allow Notifications")}</Text>
                 <Switch
                     value={notificationsEnabled}
                     onValueChange={setNotificationsEnabled}
@@ -75,7 +83,7 @@ export default function Setup() {
             </View>
 
             <View style={styles.settingRow}>
-                <Text style={[styles.settingText, themeStyles[theme].text]}>Enable Dark Mode</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>{t("Enable Dark Mode")}</Text>
                 <Switch
                     value={theme === "dark"}
                     onValueChange={toggleTheme}
@@ -84,7 +92,7 @@ export default function Setup() {
             </View>
 
             <View style={styles.settingRow}>
-                <Text style={[styles.settingText, themeStyles[theme].text]}>Enable High Contrast</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>{t("Enable High Contrast")}</Text>
                 <Switch
                     value={theme === "high-contrast"}
                     onValueChange={() =>
@@ -94,8 +102,17 @@ export default function Setup() {
                 />
             </View>
 
+            <View style={styles.settingRow}>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>{t("Language")}: {language === 'en' ? 'English' : 'Español'}</Text>
+                <Switch
+                    value={language === 'es'}
+                    onValueChange={toggleLanguage}
+                    thumbColor={language === 'es' ? Colors.PRIMARY : Colors.GRAY}
+                />
+            </View>
+
             <View style={styles.settingColumn}>
-                <Text style={[styles.settingText, themeStyles[theme].text]}>Preferred Resources</Text>
+                <Text style={[styles.settingText, themeStyles[theme].text]}>{t("Preferred Resources")}</Text>
                 {resourceOptions.map((resource) => (
                     <View key={resource} style={styles.checkboxRow}>
                         <Checkbox
@@ -109,11 +126,11 @@ export default function Setup() {
             </View>
 
             <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleSavePreferences}>
-                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Save</Text>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>{t("Save")}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={() => router.replace('/')}>
-                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Log Out</Text>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>{t("Log Out")}</Text>
             </TouchableOpacity>
 
         </SafeAreaView>
