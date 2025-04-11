@@ -27,7 +27,9 @@ export default function Resources() {
 
     return (
         <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-            <Text style={[styles.header, themeStyles[theme].title]}>Resources</Text>
+            <View style={{ paddingHorizontal: 25 }}>
+                <Text style={[styles.header, themeStyles[theme].title]}>Resources</Text>
+            </View>
             <Carousel
                 loop
                 width={screenWidth}
@@ -48,12 +50,11 @@ export default function Resources() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 25,
         width: '100%',
         backgroundColor: Colors.CREAM,
     },
     item: {
-        width: '100%',
+        width: Dimensions.get('window').width,
         height: 700,
         backgroundColor: Colors.SECONDARY,
         borderRadius: 12,
