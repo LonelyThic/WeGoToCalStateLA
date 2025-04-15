@@ -1,10 +1,10 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
+import { getFinalScore } from "../quizzes/final_scores";
 
 const quotes = [
     "The only way to do great work is to love what you do. – Steve Jobs",
@@ -40,6 +40,8 @@ const RenderItem = ({ item }) => (
 
 export default function Events() {
     const [quote, setQuote] = useState("");
+    const [gad7Score, setGad7Score] = useState(null);
+    const [phq9Score, setPhq9Score] = useState(null);
     const { theme } = useTheme();
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
@@ -48,18 +50,29 @@ export default function Events() {
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
         setQuote(quotes[randomIndex]);
+
+        const fetchScores = async () => {
+            const gad = await getFinalScore("GAD7");
+            const phq = await getFinalScore("PHQ9");
+            setGad7Score(gad);
+            setPhq9Score(phq);
+        };
+
+        fetchScores();
     }, []);
 
     const handleQuizzesPress = () => {
-        router.push('/quizzes'); // Replace with actual route
+        // router.push('../quizzes/GAD7/gad_7Disclaimer');
+        router.push('../quizzes/quiz_list');
     };
 
     return (
-        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+        <ScrollView contentContainerStyle={[styles.container, themeStyles[theme].container]}>
             <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
             <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
+
             <Carousel
                 loop
                 width={screenWidth * 1.03}
@@ -72,10 +85,26 @@ export default function Events() {
                 style={{ marginBottom: 20 }}
                 renderItem={({ item }) => <RenderItem item={item} />}
             />
+
+            <Text style={[styles.header, themeStyles[theme].title]}>Your Past Scores</Text>
+            <View style={styles.scoreCard}>
+                <Text style={[styles.scoreLabel, themeStyles[theme].text]}>GAD-7 Final Score:</Text>
+                <Text style={[styles.scoreValue, themeStyles[theme].text]}>
+                    {gad7Score !== null ? `${gad7Score} / 21` : "Not available"}
+                </Text>
+            </View>
+            <View style={styles.scoreCard}>
+                <Text style={[styles.scoreLabel, themeStyles[theme].text]}>PHQ-9 Final Score:</Text>
+                <Text style={[styles.scoreValue, themeStyles[theme].text]}>
+                    {phq9Score !== null ? `${phq9Score} / 27` : "Not available"}
+                </Text>
+            </View>
+
             <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
             </TouchableOpacity>
-        </SafeAreaView>
+            
+        </ScrollView>
     );
 }
 
@@ -144,6 +173,22 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    scoreCard: {
+        backgroundColor: Colors.SECONDARY,
+        padding: 15,
+        borderRadius: 10,
+        width: "100%",
+        marginBottom: 10,
+    },
+    scoreLabel: {
+        fontSize: 16,
+        fontWeight: "600",
+    },
+    scoreValue: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 5,
     },
 });
 
