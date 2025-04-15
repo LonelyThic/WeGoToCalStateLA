@@ -1,27 +1,42 @@
-import React from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Rect, Text as SvgText, Defs, LinearGradient, Stop, Polygon } from "react-native-svg";
-import { useLocalSearchParams } from "expo-router";
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Defs, LinearGradient, Rect, Stop, Text as SvgText } from "react-native-svg";
+import Colors from "../../../constant/Colors";
+import { useTheme } from "../../context/ThemeContext";
+import { saveFinalScore } from "../final_scores";
 
 export default function PHQ9Results() {
   const insets = useSafeAreaInsets();
-
-  // Mock Data
-  //const score = 5;
-  //const maxScore = 27;
-  //const percentage = (score / maxScore) * 100;
-  //const weeklyScores = [1, 1, 1, 1]; // Mock weekly data
-
+  const { theme } = useTheme();
   const { totalScore } = useLocalSearchParams();
+  const router = useRouter();
   const score = parseInt(totalScore); // convert string to number if needed
+  useEffect(() => {
+    saveFinalScore("PHQ9", score);
+  }, []);
   const maxScore = 27;
   const percentage = (score / maxScore) * 100;
-  
-  const weeklyScores = [1, 1, 1, 1];
 
+  const [weeklyScores, setWeeklyScores] = React.useState([]);
+
+  useEffect(() => {
+    const updateScores = async () => {
+      try {
+        const existing = await AsyncStorage.getItem("weeklyScoresPHQ9");
+        let parsed = existing ? JSON.parse(existing) : [];
+        parsed.push(score);
+        await AsyncStorage.setItem("weeklyScoresPHQ9", JSON.stringify(parsed));
+        setWeeklyScores(parsed);
+      } catch (e) {
+        console.error("Failed to load or update weekly scores", e);
+      }
+    };
+    updateScores();
+  }, []);
+  
   // Determine Depression Category
   const getCategory = (score) => {
     if (score <= 4) return "1-4 Minimal depression";
@@ -41,14 +56,14 @@ export default function PHQ9Results() {
   };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+    <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]}>
+      <View style={[styles.container, themeStyles[theme].innerContainer, { paddingTop: insets.top + 20 }]}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* Title */}
-          <Text style={styles.title}>PHQ - 9 Results</Text>
+          <Text style={[styles.title, themeStyles[theme].headingText]}>PHQ - 9 Results</Text>
 
           {/* Gradient Bar Chart */}
-          <View style={styles.chartBox}>
+          <View style={[styles.chartBox, themeStyles[theme].card]}>
             <Svg height="100" width="100%">
               <Defs>
                 <LinearGradient id="gradient" x1="0" y1="0" x2="1" y2="0">
@@ -64,7 +79,7 @@ export default function PHQ9Results() {
 
               {/* Score Marker Box */}
               <Rect
-                x={`${percentage}%`}
+                x={`${Math.min(Math.max(percentage, 5), 95)}%`}
                 y="10"
                 width="30"
                 height="30"
@@ -75,7 +90,7 @@ export default function PHQ9Results() {
                 transform="translate(-15, 0)"
               />
               <SvgText
-                x={`${percentage}%`}
+                x={`${Math.min(Math.max(percentage, 5), 95)}%`}
                 y="30"
                 fontSize="20"
                 fontWeight="bold"
@@ -84,40 +99,40 @@ export default function PHQ9Results() {
               >
                 {score}
               </SvgText>
-  
+
               {/* Start and End Numbers */}
-              <SvgText x="0" y="80" fontSize="22" fontWeight="bold" fill="black" textAnchor="start">0</SvgText>
-              <SvgText x="295" y="80" fontSize="22" fontWeight="bold" fill="black" textAnchor="end">27</SvgText>
+              <SvgText x="0" y="80" textAnchor="start" style={[styles.svgText, themeStyles[theme].svgText]}>0</SvgText>
+              <SvgText x="100%" y="80" textAnchor="end" style={[styles.svgText, themeStyles[theme].svgText]}>27</SvgText>
             </Svg>
 
             {/* Score Meaning Box */}
-            <View style={styles.scoreBox}>
-              <Text style={styles.scoreText}>{score}/27</Text>
-              <Text style={styles.categoryText}>{getCategory(score)}</Text>
+            <View style={[styles.scoreBox, themeStyles[theme].scoreBox]}>
+              <Text style={[styles.scoreText, themeStyles[theme].scoreText]}>{score}/27</Text>
+              <Text style={[styles.categoryText, themeStyles[theme].categoryText]}>{getCategory(score)}</Text>
             </View>
           </View>
 
           {/* Weekly Score Chart */}
-          <View style={styles.weeklyChartBox}>
+          <View style={[styles.weeklyChartBox, themeStyles[theme].card]}>
             <View style={styles.weeklyBarContainer}>
               {weeklyScores.map((val, index) => (
                 <View key={index} style={styles.weeklyBar}>
-                  <Text style={styles.weeklyScore}>{val}</Text>
+                  <Text style={[styles.weeklyScore, themeStyles[theme].text]}>{val}</Text>
                 </View>
               ))}
             </View>
             <View style={styles.weeklyLabels}>
-              {["Week 1", "Week 3", "Week 5", "Week 7"].map((label, index) => (
-                <Text key={index} style={styles.weeklyLabel}>
-                  {label}
+              {weeklyScores.map((_, index) => (
+                <Text key={index} style={[styles.weeklyLabel, themeStyles[theme].weekLabelText]}>
+                  Week {index + 1}
                 </Text>
               ))}
             </View>
-            </View>
-         {/* Continue Button */}
-                   <TouchableOpacity style={styles.continueButton} onPress={() => router.push("/nextScreen")}>
-                     <Text style={styles.buttonText}>Continue</Text>
-                   </TouchableOpacity>
+          </View>
+          {/* Continue Button */}
+          <TouchableOpacity style={[styles.continueButton, themeStyles[theme].button]} onPress={() => router.push("/home_screen/home")}>
+            <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Continue</Text>
+          </TouchableOpacity>
 
         </ScrollView>
       </View>
@@ -128,11 +143,9 @@ export default function PHQ9Results() {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: "#F4F0EB",
   },
   container: {
     flex: 1,
-    backgroundColor: "#F8E980",
   },
   scrollContainer: {
     alignItems: "center",
@@ -147,15 +160,13 @@ const styles = StyleSheet.create({
   },
   chartBox: {
     width: "90%",
-    backgroundColor: "white",
     padding: 20,
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 5,
-  }, 
+  },
   scoreBox: {
-    backgroundColor: "#FFC107",
     padding: 10,
     borderRadius: 10,
     width: "90%",
@@ -172,12 +183,11 @@ const styles = StyleSheet.create({
   },
   weeklyChartBox: {
     width: "90%",
-    backgroundColor: "white",
     padding: 20,
     borderRadius: 15,
     marginBottom: 15,
     marginTop: 80,
-  }, 
+  },
   weeklyBarContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -206,16 +216,64 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 25,
+    padding: 15,
+    borderRadius: 10,
     width: "90%",
     alignItems: "center",
     marginTop: 20,
   },
   buttonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
- 
+  svgText: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+
 });
+
+const themeStyles = {
+  light: {
+    container: { backgroundColor: Colors.CREAM },
+    innerContainer: { backgroundColor: Colors.LIGHT_YELLOW },
+    card: { backgroundColor: Colors.WHITE },
+    scoreBox: { backgroundColor: Colors.PRIMARY },
+    text: { color: Colors.BLACK },
+    button: { backgroundColor: Colors.PRIMARY },
+    buttonText: { color: Colors.WHITE },
+    headingText: { color: Colors.BLACK },
+    scoreText: { color: Colors.WHITE },
+    categoryText: { color: Colors.WHITE },
+    weekLabelText: { color: Colors.DARK_GRAY },
+    svgText: { fill: Colors.BLACK },
+  },
+  dark: {
+    container: { backgroundColor: Colors.M_CHAR },
+    innerContainer: { backgroundColor: Colors.M_CHAR },
+    card: { backgroundColor: "#2C2C2C" },
+    scoreBox: { backgroundColor: "#3A3A3A" },
+    text: { color: Colors.WHITE },
+    button: { backgroundColor: Colors.GRAY },
+    buttonText: { color: Colors.WHITE },
+    headingText: { color: Colors.WHITE },
+    scoreText: { color: Colors.WHITE },
+    categoryText: { color: "#CCCCCC" },
+    weekLabelText: { color: "#CCCCCC" },
+    svgText: { fill: Colors.WHITE },
+  },
+  "high-contrast": {
+    container: { backgroundColor: "#000000" },
+    innerContainer: { backgroundColor: "#000000" },
+    card: { backgroundColor: "#FFFF00" },
+    scoreBox: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" },
+    text: { color: "#000000" },
+    button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" },
+    buttonText: { color: "#000000" },
+    headingText: { color: "#FFFF00" },
+    scoreText: { color: "#000000" },
+    categoryText: { color: "#000000" },
+    weekLabelText: { color: "#000000" },
+    svgText: { fill: "#000000" },
+  },
+};
