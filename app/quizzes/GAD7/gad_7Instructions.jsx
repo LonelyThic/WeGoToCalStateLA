@@ -1,44 +1,47 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import Colors from "../../../constant/Colors";
+import { useTheme } from "../../context/ThemeContext";
 
-export default function PHQ9Instructions() {
+export default function GAD7Instructions() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
+    <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]}>
       <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* Title */}
-          <Text style={styles.title}>GAD - 7 Instructions</Text>
+          <Text style={[styles.title, themeStyles[theme].title]}>GAD - 7 Instructions</Text>
 
           {/* Instruction Box */}
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>
+          <View style={[styles.infoBox, themeStyles[theme].textInput]}>
+            <Text style={[styles.infoText, themeStyles[theme].text]}>
               For the following 7 questions, please choose the option that best fits your current mindset.
             </Text>
           </View>
 
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>
+          <View style={[styles.infoBox, themeStyles[theme].textInput]}>
+            <Text style={[styles.infoText, themeStyles[theme].text]}>
               After all questions have been answered, a final score will be provided. Please refer to provided tables and charts.
             </Text>
           </View>
 
           {/* Score Explanation Box */}
-          <View style={styles.infoBox}>
-            <Text style={styles.boldText}>Total Score Depression Severity</Text>
-            <Text style={styles.scoreText}>0-4 Minimal depression</Text>
-            <Text style={styles.scoreText}>5-9 Mild depression</Text>
-            <Text style={styles.scoreText}>10-14 Moderate anxiety</Text>
-            <Text style={styles.scoreText}>15-21 Severe anxiety</Text>
+          <View style={[styles.infoBox, themeStyles[theme].textInput]}>
+            <Text style={[styles.boldText, themeStyles[theme].text]}>Total Score Depression Severity</Text>
+            <Text style={[styles.scoreText, themeStyles[theme].text]}>0-4 Minimal depression</Text>
+            <Text style={[styles.scoreText, themeStyles[theme].text]}>5-9 Mild depression</Text>
+            <Text style={[styles.scoreText, themeStyles[theme].text]}>10-14 Moderate anxiety</Text>
+            <Text style={[styles.scoreText, themeStyles[theme].text]}>15-21 Severe anxiety</Text>
           </View>
 
           {/* Start Quiz Button */}
-          <TouchableOpacity style={styles.startButton} onPress={() => router.push("/quizzes/GAD7/gad_7Q1")}>
-            <Text style={styles.startButtonText}>Take Health Check Quiz</Text>
+          <TouchableOpacity style={[styles.startButton, themeStyles[theme].button]} onPress={() => router.push("/quizzes/GAD7/QuizGAD7")}>
+            <Text style={[styles.startButtonText, themeStyles[theme].buttonText]}>Take Health Check Quiz</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -49,11 +52,9 @@ export default function PHQ9Instructions() {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: "#F4F0EB",
   },
   container: {
     flex: 1,
-    backgroundColor: "#F4F0EB",
   },
   scrollContainer: {
     alignItems: "center",
@@ -66,7 +67,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   infoBox: {
-    backgroundColor: "white",
     padding: 15,
     borderRadius: 10,
     width: "90%",
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   startButton: {
-    backgroundColor: "black",
     padding: 15,
     borderRadius: 10,
     width: "90%",
@@ -96,9 +95,34 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   startButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
 });
 
+const themeStyles = {
+  light: {
+    container: { backgroundColor: Colors.CREAM },
+    title: { color: Colors.BLACK },
+    textInput: { backgroundColor: Colors.WHITE },
+    button: { backgroundColor: Colors.PRIMARY },
+    buttonText: { color: Colors.WHITE },
+    text: { color: Colors.BLACK },
+  },
+  dark: {
+    container: { backgroundColor: Colors.M_CHAR },
+    title: { color: Colors.WHITE },
+    textInput: { backgroundColor: Colors.GRAY },
+    button: { backgroundColor: Colors.GRAY },
+    buttonText: { color: Colors.WHITE },
+    text: { color: Colors.WHITE },
+  },
+  "high-contrast": {
+    container: { backgroundColor: "#000000" },
+    title: { color: "#FFFF00" },
+    textInput: { backgroundColor: "#000000", borderColor: "#FFFF00", borderWidth: 2 },
+    button: { backgroundColor: "#FFFF00", borderColor: "#FFFFFF", borderWidth: 2 },
+    buttonText: { color: "#000000" },
+    text: { color: "#FFFF00" },
+  },
+};
