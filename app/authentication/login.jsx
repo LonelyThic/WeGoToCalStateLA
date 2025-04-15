@@ -19,7 +19,7 @@ export default function Login() {
     }
 
     try {
-      router.push('/authentication/login_mfa');
+      router.push('../home_screen/home');
     } catch (error) {
       Alert.alert("Error", "Failed to login. Try again.");
     }
@@ -66,12 +66,6 @@ export default function Login() {
           <Text style={styles.signUpText}> Reset Password Here</Text>
         </Pressable>
       </View>
-
-      {/* Toggle Button for Theme (Light -> Dark -> High Contrast) */}
-      {/* <View style={styles.toggleContainer}>
-          <Text style={[styles.text, themeStyles[theme].text]}>Toggle Theme</Text>
-          <Switch value={theme !== "light"} onValueChange={toggleTheme} />
-        </View> */}
     </SafeAreaView>
   );
 }
