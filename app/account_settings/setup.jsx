@@ -133,6 +133,9 @@ export default function Setup() {
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>{t("Log Out")}</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={() => router.push("/profile/personal-info")}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Personal Information</Text>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }
