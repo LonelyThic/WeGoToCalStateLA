@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"; // For chatbot icon
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView as RNSafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
@@ -65,7 +65,13 @@ export default function Home() {
       edges={["left", "right"]}
     >
       <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-        {renderContent()}
+        {displayedTab === "Home" || displayedTab === "Profile" ? (
+          <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+            {renderContent()}
+          </ScrollView>
+        ) : (
+          renderContent()
+        )}
       </Animated.View>
 
       {/* AI Chatbot Floating Button */}

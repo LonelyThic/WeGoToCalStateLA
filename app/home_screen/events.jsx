@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
 import { getFinalScore } from "../quizzes/final_scores";
@@ -67,24 +68,26 @@ export default function Events() {
     };
 
     return (
-        <ScrollView contentContainerStyle={[styles.container, themeStyles[theme].container]}>
+        <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]} edges={["top", "left", "right"]}>
             <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
             <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
 
-            <Carousel
-                loop
-                width={screenWidth * 1.03}
-                height={300}
-                autoPlay={false}
-                data={eventsData}
-                scrollAnimationDuration={1000}
-                mode="parallax"
-                modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
-                style={{ marginBottom: 20 }}
-                renderItem={({ item }) => <RenderItem item={item} />}
-            />
+            <View style={{ alignItems: "center" }}>
+                <Carousel
+                    loop
+                    width={screenWidth * 0.9}
+                    height={300}
+                    autoPlay={false}
+                    data={eventsData}
+                    scrollAnimationDuration={1000}
+                    mode="parallax"
+                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                    style={{ marginBottom: 20 }}
+                    renderItem={({ item }) => <RenderItem item={item} />}
+                />
+            </View>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Your Past Scores</Text>
             <View style={styles.scoreCard}>
@@ -103,8 +106,7 @@ export default function Events() {
             <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
             </TouchableOpacity>
-            
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 
@@ -113,6 +115,9 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 25,
         width: '100%',
+    },
+    safeContainer: {
+        flex: 1,
     },
     header: {
         fontSize: 30,
@@ -125,6 +130,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         marginBottom: 20,
         textAlign: 'center',
+        marginHorizontal: 20,
     },
     eventCard: {
         width: Dimensions.get('window').width * 0.9,
@@ -167,7 +173,9 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
-        marginTop: 10, // Adjust as needed
+        marginTop: 10,
+        width: "90%",
+        alignSelf: "center",
     },
     buttonText: {
         color: Colors.WHITE,
@@ -178,7 +186,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.SECONDARY,
         padding: 15,
         borderRadius: 10,
-        width: "100%",
+        width: "90%",
+        alignSelf: "center",
         marginBottom: 10,
     },
     scoreLabel: {
