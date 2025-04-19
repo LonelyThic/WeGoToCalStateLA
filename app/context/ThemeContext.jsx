@@ -38,3 +38,9 @@ export const ThemeProvider = ({ children }) => {
 };
 
 export const useTheme = () => useContext(ThemeContext);
+
+const Placeholder = () => {
+    return null;
+};
+
+export default Placeholder;
