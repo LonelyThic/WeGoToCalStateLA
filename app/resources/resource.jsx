@@ -15,7 +15,7 @@ const RenderItem = ({ item }) => {
     const { theme } = useTheme();
     return (
         <View style={styles.item}>
-            <Text style={[styles.itemText, themeStyles[theme].title]}>{item.title}</Text>
+            <Text style={[styles.itemText, themeStyles[theme].sectionTitle]}>{item.title}</Text>
             <Text style={[styles.cardDescription, themeStyles[theme].text]}>{item.description}</Text>
         </View>
     );
@@ -28,22 +28,23 @@ export default function Resources() {
     return (
         <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
             <View style={{ paddingHorizontal: 25 }}>
-                <Text style={[styles.header, themeStyles[theme].title]}>Resources</Text>
+                <Text style={[styles.header, themeStyles[theme].headerTitle]}>Resources</Text>
             </View>
-            <Carousel
-                loop
-                width={screenWidth}
-                height={700}
-                autoPlay={false}
-                data={data}
-                scrollAnimationDuration={1000}
-                mode="parallax"
-                modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
-                style={{ marginBottom: 20 }}
-                renderItem={({ item }) => <RenderItem item={item} />}
-            />
+            <View>
+                <Carousel
+                    loop
+                    width={screenWidth}
+                    height={650}
+                    autoPlay={false}
+                    data={data}
+                    scrollAnimationDuration={1000}
+                    mode="parallax"
+                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                    style={{ marginBottom: 20 }}
+                    renderItem={({ item }) => <RenderItem item={item} />}
+                />
+            </View>
         </SafeAreaView>
-
     );
 }
 
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     },
     item: {
         width: Dimensions.get('window').width,
-        height: 700,
+        height: 650,
         backgroundColor: Colors.SECONDARY,
         borderRadius: 12,
         paddingTop: 20,
@@ -90,7 +91,8 @@ const styles = StyleSheet.create({
 const themeStyles = {
     light: {
         container: { backgroundColor: Colors.CREAM },
-        title: { color: Colors.BLACK },
+        headerTitle: { color: Colors.BLACK },
+        sectionTitle: { color: Colors.BLACK },
         textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
         button: { backgroundColor: Colors.PRIMARY },
         buttonText: { color: Colors.WHITE },
@@ -98,7 +100,8 @@ const themeStyles = {
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
-        title: { color: Colors.WHITE },
+        headerTitle: { color: Colors.WHITE },
+        sectionTitle: { color: Colors.WHITE },
         textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
         button: { backgroundColor: Colors.GRAY },
         buttonText: { color: Colors.WHITE },
@@ -106,10 +109,11 @@ const themeStyles = {
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" }, // Black Background
-        title: { color: "#FFFF00" }, // Yellow Title
+        headerTitle: { color: "#FFFF00" }, // Yellow Title
+        sectionTitle: { color: Colors.BLACK }, // Black Section Title
         textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 }, // Yellow Text, Black Background
         button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" }, // Yellow Button with White Border
         buttonText: { color: "#000000" }, // Black Text for Contrast
-        text: { color: "#FFFF00" }, // Yellow Text
+        text: { color: Colors.BLACK }, // Yellow Text
     },
 };
