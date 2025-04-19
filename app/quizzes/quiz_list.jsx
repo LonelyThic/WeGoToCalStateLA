@@ -84,7 +84,7 @@ const themeStyles = {
         title: { color: Colors.WHITE },
         text: { color: Colors.WHITE },
         card: { backgroundColor: Colors.GRAY },
-        description: { color: Colors.LIGHT_GRAY },
+        description: { color: Colors.WHITE },
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
