@@ -15,4 +15,6 @@ export default {
     D_OLIVE: '#3F3A1E',
     M_CHAR: '#2E2B24',
     ESPRESSO: '#2B1E14',
+    DARK_G: '#2b2a32',
+    DARK_CY: '#262f3d'
 };
