@@ -6,7 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from '../context/ThemeContext';
 
@@ -195,6 +195,7 @@ const themeStyles = {
 
 export default function RefineEmotion() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [broadEmotion, setBroadEmotion] = useState('');
   const [midEmotion, setMidEmotion] = useState('');
   const [subEmotion, setSubEmotion] = useState('');
@@ -254,8 +255,10 @@ export default function RefineEmotion() {
 
 
   return (
-    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle, themeStyles[theme].container]}>
-      <Text style={[refineStyles.header, themeStyles[theme].title]}>Daily Check In</Text>
+    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle, themeStyles[theme].container, { marginTop: -insets.top }]}>
+      <View style={{ marginTop: 20 }}>
+        <Text style={[refineStyles.header, themeStyles[theme].title]}>Daily Check In</Text>
+      </View>
       
       <CustomDropdown
         label="Select Broad Emotion:"
@@ -317,13 +320,14 @@ export default function RefineEmotion() {
 const refineStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 25,
+    paddingHorizontal: 25,
+    paddingBottom: 10,
     backgroundColor: Colors.transparent,
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
     color: Colors.BLACK,
   },
