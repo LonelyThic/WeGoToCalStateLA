@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { useTheme } from '../context/ThemeContext';
@@ -12,6 +13,15 @@ import i18n from '../i18n';
 export default function Setup() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const bgColor = useSharedValue(themeStyles[theme].container.backgroundColor);
+    
+    useEffect(() => {
+        bgColor.value = withTiming(themeStyles[theme].container.backgroundColor, { duration: 300 });
+    }, [theme]);
+    
+    const animatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: bgColor.value
+    }));
     const { t } = useTranslation();
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [language, setLanguage] = useState(i18n.language || 'en');
@@ -70,7 +80,8 @@ export default function Setup() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+        <Animated.View style={[styles.container, animatedStyle]}>
+            <SafeAreaView>
             <Text style={[styles.title, themeStyles[theme].title]}>{t("Account Setup")}</Text>
 
             <View style={styles.settingRow}>
@@ -137,6 +148,7 @@ export default function Setup() {
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Personal Information</Text>
             </TouchableOpacity>
         </SafeAreaView>
+        </Animated.View>
     );
 }
 
