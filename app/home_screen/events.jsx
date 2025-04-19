@@ -70,7 +70,7 @@ export default function Events() {
     return (
         <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]} edges={["top", "left", "right"]}>
             <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
-            <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
+            <Text style={[styles.quote, themeStyles[theme].quote]}>{quote}</Text>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
 
@@ -89,6 +89,10 @@ export default function Events() {
                 />
             </View>
 
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
+            </TouchableOpacity>
+
             <Text style={[styles.header, themeStyles[theme].title]}>Your Past Scores</Text>
             <View style={styles.scoreCard}>
                 <Text style={[styles.scoreLabel, themeStyles[theme].text]}>GAD-7 Final Score:</Text>
@@ -103,9 +107,7 @@ export default function Events() {
                 </Text>
             </View>
 
-            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
-                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
-            </TouchableOpacity>
+
         </SafeAreaView>
     );
 }
@@ -174,6 +176,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         marginTop: 10,
+        marginBottom: 20,
         width: "90%",
         alignSelf: "center",
     },
@@ -209,6 +212,7 @@ const themeStyles = {
         button: { backgroundColor: Colors.PRIMARY },
         buttonText: { color: Colors.WHITE },
         text: { color: Colors.BLACK },
+        quote: { color: Colors.DARK_GRAY },
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
@@ -216,7 +220,8 @@ const themeStyles = {
         textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
         button: { backgroundColor: Colors.GRAY },
         buttonText: { color: Colors.WHITE },
-        text: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+        quote: { color: Colors.WHITE },
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
@@ -224,6 +229,7 @@ const themeStyles = {
         textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 },
         button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" },
         buttonText: { color: "#000000" },
-        text: { color: "#FFFF00" },
+        text: { color: Colors.BLACK },
+        quote: { color: "#FFFF00" },
     },
 };
