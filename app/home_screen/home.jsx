@@ -53,25 +53,44 @@ export default function Home() {
   };
 
   return (
-    <AnimatedSafeAreaView
-      style={[
-        styles.container,
-        themeStyles[theme].container,
-        {
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-        },
-      ]}
+    <>
+      <View style={[styles.topBar, themeStyles[theme].topBar, { paddingTop: insets.top }]}>
+        <Text style={[styles.username, { color: themeStyles[theme].usernameText }]}>Welcome back, Ryan</Text>
+        <TouchableOpacity
+          accessible
+          accessibilityLabel="Go to quizzes"
+          onPress={() => router.push("../quizzes/quiz_list")}
+        >
+          <Ionicons name="clipboard-outline" size={24} color={themeStyles[theme].iconColor} />
+        </TouchableOpacity>
+      </View>
+      <AnimatedSafeAreaView
+        style={[
+          styles.container,
+          themeStyles[theme].container,
+          {
+            paddingBottom: insets.bottom,
+          },
+        ]}
       edges={["left", "right"]}
-    >
+      >
       <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-        {displayedTab === "Home" || displayedTab === "Profile" ? (
-          <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-            {renderContent()}
-          </ScrollView>
-        ) : (
-          renderContent()
-        )}
+        <View style={{ flex: 1 }}>
+          {["Home", "Profile"].includes(displayedTab) ? (
+            <ScrollView
+              contentContainerStyle={{
+                paddingBottom: 120,
+                paddingTop: insets.top + 10,
+              }}
+            >
+              {renderContent()}
+            </ScrollView>
+          ) : (
+            <View style={{ paddingTop: insets.top + 60, flex: 1 }}>
+              {renderContent()}
+            </View>
+          )}
+        </View>
       </Animated.View>
 
       {/* AI Chatbot Floating Button */}
@@ -82,23 +101,24 @@ export default function Home() {
       {/* Bottom Navigation Bar */}
       <View style={[styles.navBar, themeStyles[theme].navBar]}>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Home")}>
-          <Ionicons name="home" size={24} color={Colors.WHITE} />
+          <Ionicons name="home" size={24} color={themeStyles[theme].iconColor} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Resources")}>
-          <Ionicons name="book" size={24} color={Colors.WHITE} />
+          <Ionicons name="book" size={24} color={themeStyles[theme].iconColor} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Resources</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Check-In")}>
-          <Ionicons name="checkmark-circle" size={24} color={Colors.WHITE} />
+          <Ionicons name="checkmark-circle" size={24} color={themeStyles[theme].iconColor} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Check-In</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Profile")}>
-          <Ionicons name="person" size={24} color={Colors.WHITE} />
+          <Ionicons name="person" size={24} color={themeStyles[theme].iconColor} />
           <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
         </TouchableOpacity>
       </View>
     </AnimatedSafeAreaView>
+    </>
   );
 }
 
@@ -162,6 +182,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: Colors.PRIMARY,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
   },
   navButton: {
     alignItems: "center",
@@ -170,6 +198,29 @@ const styles = StyleSheet.create({
   navLabel: {
     fontSize: 12,
     marginTop: 4,
+  },
+  topBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 6,
+    zIndex: 10,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
@@ -184,6 +235,9 @@ const themeStyles = {
     progressText: { color: Colors.DARK_GRAY },
     navBar: { backgroundColor: Colors.PRIMARY },
     navLabel: { color: Colors.WHITE },
+    topBar: { backgroundColor: Colors.PRIMARY },
+    iconColor: Colors.WHITE,
+    usernameText: Colors.WHITE,
   },
   dark: {
     container: { backgroundColor: Colors.M_CHAR },
@@ -195,6 +249,9 @@ const themeStyles = {
     progressText: { color: Colors.LIGHT_GRAY },
     navBar: { backgroundColor: Colors.GRAY },
     navLabel: { color: Colors.WHITE },
+    topBar: { backgroundColor: Colors.GRAY },
+    iconColor: Colors.WHITE,
+    usernameText: Colors.WHITE,
   },
   "high-contrast": {
     container: { backgroundColor: "#000000" },
@@ -210,5 +267,8 @@ const themeStyles = {
     progressText: { color: "#FFFFFF" },
     navBar: { backgroundColor: "#FFFF00" },
     navLabel: { color: "#000000" },
+    topBar: { backgroundColor: "#FFFF00" },
+    iconColor: Colors.BLACK,
+    usernameText: Colors.BLACK,
   },
 };
