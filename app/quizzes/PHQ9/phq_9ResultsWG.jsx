@@ -114,20 +114,30 @@ export default function PHQ9Results() {
 
           {/* Weekly Score Chart */}
           <View style={[styles.weeklyChartBox, themeStyles[theme].card]}>
-            <View style={styles.weeklyBarContainer}>
-              {weeklyScores.map((val, index) => (
-                <View key={index} style={styles.weeklyBar}>
-                  <Text style={[styles.weeklyScore, themeStyles[theme].text]}>{val}</Text>
+            {Array.from({ length: Math.ceil(weeklyScores.length / 4) }, (_, rowIndex) => {
+              const rowScores = weeklyScores.slice(rowIndex * 4, rowIndex * 4 + 4);
+              return (
+                <View key={`row-${rowIndex}`} style={{ marginBottom: 10 }}>
+                  <View style={styles.weeklyBarContainer}>
+                    {rowScores.map((val, index) => (
+                      <View key={index} style={styles.weeklyBar}>
+                        <Text style={[styles.weeklyScore, themeStyles[theme].text]}>{val}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  <View style={styles.weeklyLabels}>
+                    {rowScores.map((_, index) => {
+                      const weekNumber = rowIndex * 4 + index + 1;
+                      return (
+                        <Text key={index} style={[styles.weeklyLabel, themeStyles[theme].weekLabelText]}>
+                          Week {weekNumber}
+                        </Text>
+                      );
+                    })}
+                  </View>
                 </View>
-              ))}
-            </View>
-            <View style={styles.weeklyLabels}>
-              {weeklyScores.map((_, index) => (
-                <Text key={index} style={[styles.weeklyLabel, themeStyles[theme].weekLabelText]}>
-                  Week {index + 1}
-                </Text>
-              ))}
-            </View>
+              );
+            })}
           </View>
           {/* Continue Button */}
           <TouchableOpacity style={[styles.continueButton, themeStyles[theme].button]} onPress={() => router.push("/home_screen/home")}>
