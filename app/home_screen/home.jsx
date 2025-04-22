@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"; // For chatbot icon
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView as RNSafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constant/Colors";
@@ -52,6 +52,11 @@ export default function Home() {
     }
   };
 
+  StatusBar.setBarStyle(theme === "high-contrast" ? "dark-content" : "light-content");
+  if (Platform.OS === "android") {
+    StatusBar.setBackgroundColor(themeStyles[theme].topBar.backgroundColor);
+  }
+
   return (
     <>
       <View style={[styles.topBar, themeStyles[theme].topBar, { paddingTop: insets.top }]}>
@@ -77,16 +82,16 @@ export default function Home() {
       <Animated.View style={[{ flex: 1 }, animatedStyle]}>
         <View style={{ flex: 1 }}>
           {["Home", "Profile"].includes(displayedTab) ? (
-            <ScrollView
+              <ScrollView
               contentContainerStyle={{
                 paddingBottom: 120,
-                paddingTop: insets.top + 10,
+                paddingTop: Platform.OS === "android" ? insets.top + 70 : insets.top + 10,
               }}
             >
               {renderContent()}
             </ScrollView>
           ) : (
-            <View style={{ paddingTop: insets.top + 60, flex: 1 }}>
+            <View style={{ paddingTop: Platform.OS === "android" ? insets.top + 90 : insets.top + 60, flex: 1 }}>
               {renderContent()}
             </View>
           )}
