@@ -1,11 +1,17 @@
+const TOP_BUFFER = 120;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
 import { getFinalScore } from "../quizzes/final_scores";
+
+const AnimatedSafeAreaView = Animated.createAnimatedComponent(View);
 
 const quotes = [
     "The only way to do great work is to love what you do. – Steve Jobs",
@@ -47,6 +53,7 @@ export default function Events() {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -68,7 +75,17 @@ export default function Events() {
     };
 
     return (
-        <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]} edges={["top", "left", "right"]}>
+        <AnimatedSafeAreaView
+            style={[
+                styles.safeContainer,
+                themeStyles[theme].container,
+                {
+                    paddingTop: insets.top + TOP_BUFFER,
+                    paddingBottom: insets.bottom + BOTTOM_BUFFER,
+                }
+            ]}
+            edges={["top", "left", "right"]}
+        >
             <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
             <Text style={[styles.quote, themeStyles[theme].quote]}>{quote}</Text>
 
@@ -108,7 +125,7 @@ export default function Events() {
             </View>
 
 
-        </SafeAreaView>
+        </AnimatedSafeAreaView>
     );
 }
 
@@ -124,7 +141,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: TITLE_MARGIN_BOTTOM,
         textAlign: 'center',
     },
     quote: {

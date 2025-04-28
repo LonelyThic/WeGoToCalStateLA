@@ -1,3 +1,6 @@
+const TOP_BUFFER = 120;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 import React, { useState } from 'react';
 import { Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
@@ -255,7 +258,16 @@ export default function RefineEmotion() {
 
 
   return (
-    <AnimatedSafeAreaView style={[refineStyles.container, animatedStyle, themeStyles[theme].container, { marginTop: -insets.top }]}>
+    <AnimatedSafeAreaView style={[
+      StyleSheet.absoluteFill,
+      refineStyles.container,
+      animatedStyle,
+      themeStyles[theme].container,
+      {
+        paddingTop: insets.top + TOP_BUFFER,
+        paddingBottom: insets.bottom + BOTTOM_BUFFER
+      }
+    ]}>
       <View style={{ marginTop: 20 }}>
         <Text style={[refineStyles.header, themeStyles[theme].title]}>Daily Check In</Text>
       </View>
@@ -327,7 +339,7 @@ const refineStyles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: TITLE_MARGIN_BOTTOM,
     textAlign: 'center',
     color: Colors.BLACK,
   },

@@ -7,6 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
+const TOP_BUFFER = 60;
+const BOTTOM_BUFFER = 60;
+
 
 export default function Index() {
   const router = useRouter();
@@ -25,7 +28,7 @@ export default function Index() {
       colors={[Colors.PRIMARY, Colors.CREAM]} // Adjust gradient colors as needed
       style={styles.container}
     >
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
         <Animated.Image
           source={require("../assets/images/P_Logo.png")}
           style={[styles.logo, { opacity: fadeAnim }]}
@@ -54,6 +57,11 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    paddingTop: TOP_BUFFER,
+    paddingBottom: BOTTOM_BUFFER,
+  },
+  safeArea: {
     flex: 1,
   },
   logo: {

@@ -1,3 +1,6 @@
+const TOP_BUFFER = 120;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Checkbox from 'expo-checkbox';
 import { useRouter } from "expo-router";
@@ -5,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { useTheme } from '../context/ThemeContext';
 import i18n from '../i18n';
@@ -13,6 +16,7 @@ import i18n from '../i18n';
 export default function Setup() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const insets = useSafeAreaInsets();
     const bgColor = useSharedValue(themeStyles[theme].container.backgroundColor);
     
     useEffect(() => {
@@ -80,7 +84,14 @@ export default function Setup() {
     };
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}>
+        <Animated.View style={[
+            styles.container,
+            animatedStyle,
+            {
+                paddingTop: insets.top + TOP_BUFFER,
+                paddingBottom: insets.bottom + BOTTOM_BUFFER
+            }
+        ]}>
             <SafeAreaView>
             <Text style={[styles.title, themeStyles[theme].title]}>{t("Account Setup")}</Text>
 
@@ -162,7 +173,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: TITLE_MARGIN_BOTTOM,
     },
     settingRow: {
         flexDirection: "row",

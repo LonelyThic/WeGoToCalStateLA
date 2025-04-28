@@ -82,16 +82,15 @@ export default function Home() {
       <Animated.View style={[{ flex: 1 }, animatedStyle]}>
         <View style={{ flex: 1 }}>
           {["Home", "Profile"].includes(displayedTab) ? (
-              <ScrollView
+            <ScrollView
               contentContainerStyle={{
                 paddingBottom: 120,
-                paddingTop: Platform.OS === "android" ? insets.top + 70 : insets.top + 10,
               }}
             >
               {renderContent()}
             </ScrollView>
           ) : (
-            <View style={{ paddingTop: Platform.OS === "android" ? insets.top + 90 : insets.top + 60, flex: 1 }}>
+            <View style={{ flex: 1 }}>
               {renderContent()}
             </View>
           )}
@@ -238,11 +237,11 @@ const themeStyles = {
     button: { backgroundColor: Colors.PRIMARY },
     buttonText: { color: Colors.WHITE },
     progressText: { color: Colors.DARK_GRAY },
-    navBar: { backgroundColor: Colors.PRIMARY },
-    navLabel: { color: Colors.WHITE },
-    topBar: { backgroundColor: Colors.PRIMARY },
-    iconColor: Colors.WHITE,
-    usernameText: Colors.WHITE,
+    navBar: { backgroundColor: Platform.OS === 'android' ? Colors.PRIMARY : Colors.PRIMARY },
+    navLabel: { color: Platform.OS === 'android' ? Colors.WHITE : Colors.WHITE },
+    topBar: { backgroundColor: Platform.OS === 'android' ? Colors.PRIMARY : Colors.PRIMARY },
+    iconColor: Platform.OS === 'android' ? Colors.WHITE : Colors.WHITE,
+    usernameText: Platform.OS === 'android' ? Colors.WHITE : Colors.WHITE,
   },
   dark: {
     container: { backgroundColor: Colors.M_CHAR },
@@ -252,9 +251,9 @@ const themeStyles = {
     button: { backgroundColor: Colors.GRAY },
     buttonText: { color: Colors.WHITE },
     progressText: { color: Colors.LIGHT_GRAY },
-    navBar: { backgroundColor: Colors.GRAY },
+    navBar: { backgroundColor: Platform.OS === 'android' ? Colors.GRAY : Colors.GRAY },
     navLabel: { color: Colors.WHITE },
-    topBar: { backgroundColor: Colors.GRAY },
+    topBar: { backgroundColor: Platform.OS === 'android' ? Colors.GRAY : Colors.GRAY },
     iconColor: Colors.WHITE,
     usernameText: Colors.WHITE,
   },
@@ -268,12 +267,12 @@ const themeStyles = {
       borderWidth: 2,
       borderColor: "#FFFFFF",
     },
-    buttonText: { color: "#000000" },
-    progressText: { color: "#FFFFFF" },
-    navBar: { backgroundColor: "#FFFF00" },
-    navLabel: { color: "#000000" },
-    topBar: { backgroundColor: "#FFFF00" },
-    iconColor: Colors.BLACK,
-    usernameText: Colors.BLACK,
+    buttonText: { color: "#FFFF00" },
+    progressText: { color: "#FFFF00" },
+    navBar: { backgroundColor: Platform.OS === 'android' ? "#000000" : "#FFFF00" },
+    navLabel: { color: "#FFFF00" },
+    topBar: { backgroundColor: Platform.OS === 'android' ? "#000000" : "#FFFF00" },
+    iconColor: "#FFFF00",
+    usernameText: "#FFFF00",
   },
 };
