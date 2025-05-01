@@ -1,10 +1,14 @@
+const TOP_BUFFER = 120;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Checkbox from 'expo-checkbox';
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { useTheme } from '../context/ThemeContext';
 import i18n from '../i18n';
@@ -12,6 +16,16 @@ import i18n from '../i18n';
 export default function Setup() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const insets = useSafeAreaInsets();
+    const bgColor = useSharedValue(themeStyles[theme].container.backgroundColor);
+    
+    useEffect(() => {
+        bgColor.value = withTiming(themeStyles[theme].container.backgroundColor, { duration: 300 });
+    }, [theme]);
+    
+    const animatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: bgColor.value
+    }));
     const { t } = useTranslation();
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [language, setLanguage] = useState(i18n.language || 'en');
@@ -70,7 +84,15 @@ export default function Setup() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+        <Animated.View style={[
+            styles.container,
+            animatedStyle,
+            {
+                paddingTop: insets.top + TOP_BUFFER,
+                paddingBottom: insets.bottom + BOTTOM_BUFFER
+            }
+        ]}>
+            <SafeAreaView>
             <Text style={[styles.title, themeStyles[theme].title]}>{t("Account Setup")}</Text>
 
             <View style={styles.settingRow}>
@@ -133,7 +155,11 @@ export default function Setup() {
                 <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>{t("Log Out")}</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={() => router.push("/profile/personal-info")}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Personal Information</Text>
+            </TouchableOpacity>
         </SafeAreaView>
+        </Animated.View>
     );
 }
 
@@ -147,7 +173,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: TITLE_MARGIN_BOTTOM,
     },
     settingRow: {
         flexDirection: "row",

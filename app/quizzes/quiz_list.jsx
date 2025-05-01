@@ -19,6 +19,9 @@ export default function QuizListScreen() {
                     onPress={() => router.push("/quizzes/GAD7/gad_7Disclaimer")}
                 >
                     <Text style={[styles.quizText, themeStyles[theme].text]}>GAD-7 Anxiety Quiz</Text>
+                    <Text style={[styles.quizDescription, themeStyles[theme].description]}>
+                        A brief 7-question tool to screen for generalized anxiety disorder.
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -26,6 +29,9 @@ export default function QuizListScreen() {
                     onPress={() => router.push("/quizzes/PHQ9/phq_9Disclaimer")}
                 >
                     <Text style={[styles.quizText, themeStyles[theme].text]}>PHQ-9 Depression Quiz</Text>
+                    <Text style={[styles.quizDescription, themeStyles[theme].description]}>
+                        A 9-question assessment for measuring the severity of depression.
+                    </Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -57,6 +63,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
+    quizDescription: {
+        fontSize: 14,
+        textAlign: "center",
+        marginTop: 5,
+        paddingHorizontal: 10,
+    },
 });
 
 const themeStyles = {
@@ -65,17 +77,20 @@ const themeStyles = {
         title: { color: Colors.BLACK },
         text: { color: Colors.WHITE },
         card: { backgroundColor: Colors.PRIMARY },
+        description: { color: Colors.WHITE },
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
         title: { color: Colors.WHITE },
         text: { color: Colors.WHITE },
         card: { backgroundColor: Colors.GRAY },
+        description: { color: Colors.WHITE },
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
         title: { color: "#FFFF00" },
         text: { color: "#FFFF00" },
         card: { backgroundColor: "#111111", borderColor: "#FFFF00", borderWidth: 2 },
+        description: { color: "#FFFF00" },
     },
 };

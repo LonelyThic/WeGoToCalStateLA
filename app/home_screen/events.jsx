@@ -1,10 +1,17 @@
+const TOP_BUFFER = 120;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
 import { getFinalScore } from "../quizzes/final_scores";
+
+const AnimatedSafeAreaView = Animated.createAnimatedComponent(View);
 
 const quotes = [
     "The only way to do great work is to love what you do. – Steve Jobs",
@@ -46,6 +53,7 @@ export default function Events() {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -67,24 +75,40 @@ export default function Events() {
     };
 
     return (
-        <ScrollView contentContainerStyle={[styles.container, themeStyles[theme].container]}>
+        <AnimatedSafeAreaView
+            style={[
+                styles.safeContainer,
+                themeStyles[theme].container,
+                {
+                    paddingTop: insets.top + TOP_BUFFER,
+                    paddingBottom: insets.bottom + BOTTOM_BUFFER,
+                }
+            ]}
+            edges={["top", "left", "right"]}
+        >
             <Text style={[styles.header, themeStyles[theme].title]}>Daily Inspiration</Text>
-            <Text style={[styles.quote, themeStyles[theme].text]}>{quote}</Text>
+            <Text style={[styles.quote, themeStyles[theme].quote]}>{quote}</Text>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Upcoming Events</Text>
 
-            <Carousel
-                loop
-                width={screenWidth * 1.03}
-                height={300}
-                autoPlay={false}
-                data={eventsData}
-                scrollAnimationDuration={1000}
-                mode="parallax"
-                modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
-                style={{ marginBottom: 20 }}
-                renderItem={({ item }) => <RenderItem item={item} />}
-            />
+            <View style={{ alignItems: "center" }}>
+                <Carousel
+                    loop
+                    width={screenWidth * 0.9}
+                    height={300}
+                    autoPlay={false}
+                    data={eventsData}
+                    scrollAnimationDuration={1000}
+                    mode="parallax"
+                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
+                    style={{ marginBottom: 20 }}
+                    renderItem={({ item }) => <RenderItem item={item} />}
+                />
+            </View>
+
+            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
+                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
+            </TouchableOpacity>
 
             <Text style={[styles.header, themeStyles[theme].title]}>Your Past Scores</Text>
             <View style={styles.scoreCard}>
@@ -100,11 +124,8 @@ export default function Events() {
                 </Text>
             </View>
 
-            <TouchableOpacity style={[styles.button, themeStyles[theme].button]} onPress={handleQuizzesPress}>
-                <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Go to Quizzes</Text>
-            </TouchableOpacity>
-            
-        </ScrollView>
+
+        </AnimatedSafeAreaView>
     );
 }
 
@@ -114,10 +135,13 @@ const styles = StyleSheet.create({
         padding: 25,
         width: '100%',
     },
+    safeContainer: {
+        flex: 1,
+    },
     header: {
         fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: TITLE_MARGIN_BOTTOM,
         textAlign: 'center',
     },
     quote: {
@@ -125,6 +149,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         marginBottom: 20,
         textAlign: 'center',
+        marginHorizontal: 20,
     },
     eventCard: {
         width: Dimensions.get('window').width * 0.9,
@@ -167,7 +192,10 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
-        marginTop: 10, // Adjust as needed
+        marginTop: 10,
+        marginBottom: 20,
+        width: "90%",
+        alignSelf: "center",
     },
     buttonText: {
         color: Colors.WHITE,
@@ -178,7 +206,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.SECONDARY,
         padding: 15,
         borderRadius: 10,
-        width: "100%",
+        width: "90%",
+        alignSelf: "center",
         marginBottom: 10,
     },
     scoreLabel: {
@@ -200,6 +229,7 @@ const themeStyles = {
         button: { backgroundColor: Colors.PRIMARY },
         buttonText: { color: Colors.WHITE },
         text: { color: Colors.BLACK },
+        quote: { color: Colors.DARK_GRAY },
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
@@ -207,7 +237,8 @@ const themeStyles = {
         textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
         button: { backgroundColor: Colors.GRAY },
         buttonText: { color: Colors.WHITE },
-        text: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
+        quote: { color: Colors.WHITE },
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
@@ -215,6 +246,7 @@ const themeStyles = {
         textInput: { backgroundColor: "#000000", color: "#FFFF00", borderColor: "#FFFF00", borderWidth: 2 },
         button: { backgroundColor: "#FFFF00", borderWidth: 2, borderColor: "#FFFFFF" },
         buttonText: { color: "#000000" },
-        text: { color: "#FFFF00" },
+        text: { color: Colors.BLACK },
+        quote: { color: "#FFFF00" },
     },
 };

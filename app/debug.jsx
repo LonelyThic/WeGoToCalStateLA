@@ -43,6 +43,18 @@ export default function Debugging() {
                     <Text style={styles.buttonText}>Go to Chat</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/quizzes/final_scores")}>
+                    <Text style={styles.buttonText}>Go to Quizzes</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/daily_check_in/daily")}>
+                    <Text style={styles.buttonText}>Go to Daily</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/resources/resource")}>
+                    <Text style={styles.buttonText}>Go to Resources</Text>
+                </TouchableOpacity>
+
             </View>
         </SafeAreaView>
     );

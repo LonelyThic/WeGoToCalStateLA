@@ -18,3 +18,10 @@ export const getFinalScore = async (type) => {
         return null;
     }
 };
+
+
+const Placeholder = () => {
+    return null;
+};
+
+export default Placeholder;

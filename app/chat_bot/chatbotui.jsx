@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import Colors from "../../constant/Colors";
+import { useTheme } from '../context/ThemeContext';
 
 export default function AskUsScreen() {
   // keep track of messages (and giving preliminary messages)
@@ -28,6 +30,7 @@ export default function AskUsScreen() {
   ]);
   
   const [inputText, setInputText] = useState('');
+  const { theme } = useTheme();
   
   const sendMessage = (text) => {
     if (!text.trim()) return;
@@ -68,14 +71,14 @@ export default function AskUsScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
     {/* this doesn't show up on the screen? */}
-      <Stack.Screen options={{ 
+      <Stack.Screen options={{
         headerTitle: "ASK US",
         headerTitleAlign: 'center',
         headerTitleStyle: styles.headerTitle,
         headerShadowVisible: false,
-        headerStyle: { backgroundColor: '#f5f2eb' }
+        headerStyle: themeStyles[theme].headerStyle
       }} />
       
       {/* adjusts where keyboard is */}
@@ -101,6 +104,7 @@ export default function AskUsScreen() {
               )}
               <View style={[
                 styles.messageBubble,
+                themeStyles[theme].bubble
               ]}>
                 <Text style={[
                   styles.messageText,
@@ -136,7 +140,7 @@ export default function AskUsScreen() {
         
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, themeStyles[theme].textInput]}
             value={inputText}
             onChangeText={setInputText}
             placeholder="How can I help you?"
@@ -181,7 +185,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 12,
     maxWidth: '85%',
-    backgroundColor: '#1a1a1a',
     borderBottomRightRadius: 5,
     marginLeft: 5,
   },
@@ -251,3 +254,29 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
+const themeStyles = {
+  light: {
+    container: { backgroundColor: Colors.CREAM },
+    headerStyle: { backgroundColor: Colors.CREAM },
+    textInput: { backgroundColor: Colors.WHITE, color: Colors.BLACK },
+    bubble: { backgroundColor: Colors.DARK_CY },
+  },
+  dark: {
+    container: { backgroundColor: Colors.M_CHAR },
+    headerStyle: { backgroundColor: Colors.M_CHAR },
+    textInput: { backgroundColor: Colors.BLACK, color: Colors.WHITE },
+    bubble: { backgroundColor: Colors.BLACK },
+  },
+  'high-contrast': {
+    container: { backgroundColor: Colors.BLACK },
+    headerStyle: { backgroundColor: Colors.BLACK },
+    textInput: {
+      backgroundColor: Colors.BLACK,
+      color: Colors.YELLOW,
+      borderColor: Colors.YELLOW,
+      borderWidth: 2,
+    },
+    bubble: { backgroundColor: Colors.BLACK },
+  },
+};

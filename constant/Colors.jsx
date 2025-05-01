@@ -10,9 +10,11 @@ export default {
     SAND: '#E6D5B8',
     PASTEL: '#FAF3DD',
     L_GREY: '#00000080',
-    GRAY: '#808080',
+    GRAY: '#262f3d',
     D_BROWN: '#3A2E1F',
     D_OLIVE: '#3F3A1E',
     M_CHAR: '#2E2B24',
     ESPRESSO: '#2B1E14',
+    DARK_G: '#2b2a32',
+    DARK_CY: '#262f3d'
 };
