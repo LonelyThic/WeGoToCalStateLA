@@ -1,5 +1,5 @@
-import { Feather } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +7,7 @@ import Colors from "../../constant/Colors";
 import { useTheme } from '../context/ThemeContext';
 
 export default function AskUsScreen() {
+  const router = useRouter();
   // keep track of messages (and giving preliminary messages)
   const [messages, setMessages] = useState([
     {
@@ -86,6 +87,11 @@ export default function AskUsScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
+        <View style={{ alignItems: 'center', marginTop: 10 }}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color={theme === "dark" ? "#FFF" : theme === "high-contrast" ? "#FFF" : "#000"} />
+          </TouchableOpacity>
+        </View>
         <ScrollView style={styles.messagesContainer}>
           {messages.map((message) => (
             // seees the user and defines the style based on whether user or ai

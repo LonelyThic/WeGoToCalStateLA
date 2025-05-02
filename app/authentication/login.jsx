@@ -4,6 +4,19 @@ import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { useTheme } from "../context/ThemeContext";
+import {
+  CognitoUserPool,
+  CognitoUser,
+  AuthenticationDetails
+} from 'amazon-cognito-identity-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Cognito configuration
+const poolData = {
+  UserPoolId: 'us-east-1_EsxILoxQW',
+  ClientId:   '13872k4r03aunk26tqhk3jh2j9',
+};
+const userPool = new CognitoUserPool(poolData);
 
 export default function Login() {
   const router = useRouter();
@@ -12,17 +25,37 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const authDetails = new AuthenticationDetails({
+    Username: username,
+    Password: password,
+  });
+  const user = new CognitoUser({ Username: username, Pool: userPool });
+
   const handleLogin = async () => {
     if (!username || !password) {
       Alert.alert("Error", "All fields are required!");
       return;
     }
 
-    try {
-      router.push('../home_screen/home');
-    } catch (error) {
-      Alert.alert("Error", "Failed to login. Try again.");
-    }
+    user.authenticateUser(authDetails, {
+      onSuccess: async (session) => {
+        // session.getIdToken().getJwtToken(), etc.
+        const tokens = {
+          idToken:      session.getIdToken().getJwtToken(),
+          accessToken:  session.getAccessToken().getJwtToken(),
+          refreshToken: session.getRefreshToken().getToken(),
+        };
+        await AsyncStorage.setItem('cognitoTokens', JSON.stringify(tokens));
+        /************************* How to get tokens ****************************
+        * const tokenString = await AsyncStorage.getItem('cognitoTokens');      *  
+        * const tokens = tokenString != null ? JSON.parse(tokenString) : null;  *
+        ************************************************************************/
+        router.replace('../home_screen/home');
+      },
+      onFailure: (err) => {
+        Alert.alert('Login failed', err.message || JSON.stringify(err));
+      },
+    });
   };
 
   return (

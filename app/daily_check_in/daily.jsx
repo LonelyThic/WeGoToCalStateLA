@@ -1,8 +1,7 @@
-const TOP_BUFFER = 120;
-const BOTTOM_BUFFER = 120;
-const TITLE_MARGIN_BOTTOM = 20;
-import React, { useState } from 'react';
-import { Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, FlatList, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -12,6 +11,9 @@ import Animated, {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constant/Colors';
 import { useTheme } from '../context/ThemeContext';
+const TOP_BUFFER = Platform.OS === 'android' ? 50 : 20;
+const BOTTOM_BUFFER = 120;
+const TITLE_MARGIN_BOTTOM = 20;
 
 const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
@@ -23,6 +25,7 @@ function CustomDropdown({ label, options, selectedValue, onValueChange }) {
     onValueChange(value);
     setModalVisible(false);
   };
+
 
   return (
     <View style={dropdownStyles.dropdownContainer}>
@@ -199,10 +202,21 @@ const themeStyles = {
 export default function RefineEmotion() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [broadEmotion, setBroadEmotion] = useState('');
   const [midEmotion, setMidEmotion] = useState('');
   const [subEmotion, setSubEmotion] = useState('');
   const [logEntries, setLogEntries] = useState([]);
+
+  useEffect(() => {
+    AsyncStorage.getItem('emotionLogs')
+      .then(data => {
+        if (data) {
+          setLogEntries(JSON.parse(data));
+        }
+      })
+      .catch(console.warn);
+  }, []);
 
   // Shared value for animated background color index
   const bgIndex = useSharedValue(0);
@@ -220,7 +234,7 @@ export default function RefineEmotion() {
 
   const handleSubmit = () => {
     if (!broadEmotion || !midEmotion || !subEmotion) {
-      Alert.alert("Error", "Please complete all selections.");
+      Alert.alert(t("Error"), t("Please complete all selections."));
       return;
     }
 
@@ -231,20 +245,25 @@ export default function RefineEmotion() {
       timestamp: new Date().toLocaleString()
     };
 
-    setLogEntries(prev => [...prev, newEntry]);
+    const updatedLogs = [...logEntries, newEntry];
+    setLogEntries(updatedLogs);
+    AsyncStorage.setItem('emotionLogs', JSON.stringify(updatedLogs)).catch(console.warn);
 
-    Alert.alert(
-      "Emotion Selected",
-      `You selected: ${broadEmotion} > ${midEmotion} > ${subEmotion}`,
-      negativeEmotions.includes(broadEmotion)
-        ? [
-            { text: "OK" },
-            { text: "Check In Again", onPress: resetForm }
-          ]
-        : [{ text: "OK" }]
-    );
+    const isNegative = negativeEmotions.includes(broadEmotion);
+    const title = isNegative ? t("We're here for you") : t("Great to hear!");
+    const message = isNegative
+      ? t("It's okay to feel this way. Would you like to check in again later today?")
+      : t("Glad you're feeling good today. Keep it up!");
+    const buttons = isNegative
+      ? [
+          { text: t("Not Now") },
+          { text: t("Check In Again"), onPress: resetForm }
+        ]
+      : [{ text: t("Thanks!") }];
 
-    if (!negativeEmotions.includes(broadEmotion)) {
+    Alert.alert(title, message, buttons);
+
+    if (!isNegative) {
       resetForm();
     }
   };
@@ -269,11 +288,11 @@ export default function RefineEmotion() {
       }
     ]}>
       <View style={{ marginTop: 20 }}>
-        <Text style={[refineStyles.header, themeStyles[theme].title]}>Daily Check In</Text>
+        <Text style={[refineStyles.header, themeStyles[theme].title]}>{t("Daily Check In")}</Text>
       </View>
       
       <CustomDropdown
-        label="Select Broad Emotion:"
+        label={t("Select Broad Emotion:")}
         options={Object.keys(emotionData)}
         selectedValue={broadEmotion}
         onValueChange={(value) => {
@@ -287,7 +306,7 @@ export default function RefineEmotion() {
 
       {broadEmotion ? (
         <CustomDropdown
-          label="Select Specific Emotion:"
+          label={t("Select Specific Emotion:")}
           options={emotionData[broadEmotion].options}
           selectedValue={midEmotion}
           onValueChange={(value) => {
@@ -299,7 +318,7 @@ export default function RefineEmotion() {
 
       {midEmotion ? (
         <CustomDropdown
-          label="Select Associated Emotion:"
+          label={t("Select Associated Emotion:")}
           options={emotionData[broadEmotion].subOptions[midEmotion]}
           selectedValue={subEmotion}
           onValueChange={(value) => setSubEmotion(value)}
@@ -307,12 +326,12 @@ export default function RefineEmotion() {
       ) : null}
 
       <TouchableOpacity style={[refineStyles.button, themeStyles[theme].button]} onPress={handleSubmit}>
-        <Text style={[refineStyles.buttonText, themeStyles[theme].buttonText]}>Submit Emotion</Text>
+        <Text style={[refineStyles.buttonText, themeStyles[theme].buttonText]}>{t("Submit Emotion")}</Text>
       </TouchableOpacity>
 
       {logEntries.length > 0 && (
         <View style={[refineStyles.logContainer, themeStyles[theme].container]}>
-          <Text style={[refineStyles.logHeader, themeStyles[theme].title]}>Emotion Log:</Text>
+          <Text style={[refineStyles.logHeader, themeStyles[theme].title]}>{t("Emotion Log:")}</Text>
           <FlatList
             data={logEntries}
             keyExtractor={(_, index) => index.toString()}

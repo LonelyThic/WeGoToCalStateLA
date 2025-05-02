@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Carousel from 'react-native-reanimated-carousel';
@@ -10,32 +11,23 @@ import CareerRes from "./career_res";
 import FinancialRes from "./financial_res";
 import MentalRes from "./mental_res";
 import PhysicalRes from "./physical_res";
-const TOP_BUFFER = Platform.OS === 'android' ? 100 : 10;
+const TOP_BUFFER = Platform.OS === 'android' ? 70 : 10;
 const BOTTOM_BUFFER = 120;
 const TITLE_MARGIN_BOTTOM = 20;
-
-const data = [
-    { id: 1, title: "Mental Health", description: "Tips and resources for your mental well-being.", route: "mental_res", icon: "heart" },
-    { id: 2, title: "Financial Tips", description: "Advice for managing your money wisely.", route: "financial_res", icon: "cash" },
-    { id: 3, title: "Career Advice", description: "Insights to help you grow your career.", route: "career_res", icon: "briefcase" },
-    { id: 4, title: "Physical Well-Being", description: "Guidance on staying physically healthy.", route: "physical_res", icon: "fitness" },
-];
-
-const RenderItem = ({ item, onPress, themeStyles }) => (
-    <TouchableOpacity onPress={() => onPress(item.route)}>
-        <View style={[styles.item, { backgroundColor: Colors.SECONDARY }]}>
-            <Ionicons name={item.icon} size={96} color={themeStyles.iconColor} style={{ marginBottom: 20 }} />
-            <Text style={[styles.itemText, { color: themeStyles.sectionTitle.color }]}>{item.title}</Text>
-            <Text style={[styles.cardDescription, { color: themeStyles.text.color }]}>{item.description}</Text>
-        </View>
-    </TouchableOpacity>
-);
 
 export default function Resources() {
     const screenWidth = Dimensions.get('window').width;
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
     const [displayedTab, setDisplayedTab] = useState(null);
+    const { t } = useTranslation();
+
+    const data = [
+        { id: 1, title: t("Mental Health"), description: t("Tips and resources for your mental well-being."), route: "mental_res", icon: "heart" },
+        { id: 2, title: t("Financial Tips"), description: t("Advice for managing your money wisely."), route: "financial_res", icon: "cash" },
+        { id: 3, title: t("Career Advice"), description: t("Insights to help you grow your career."), route: "career_res", icon: "briefcase" },
+        { id: 4, title: t("Physical Well-Being"), description: t("Guidance on staying physically healthy."), route: "physical_res", icon: "fitness" },
+    ];
 
     const fadeAnim = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => ({ opacity: fadeAnim.value }));
@@ -58,12 +50,40 @@ export default function Resources() {
         });
     };
 
+    const BackHeader = () => (
+        <View style={styles.backHeaderCentered}>
+            <TouchableOpacity onPress={() => setDisplayedTab(null)} style={styles.backButtonCentered}>
+                <Ionicons name="arrow-back" size={32} color={themeStyles[theme].backButtonIconColor} />
+            </TouchableOpacity>
+        </View>
+    );
+
     const renderContent = () => {
         switch (displayedTab) {
-            case "mental_res": return <MentalRes />;
-            case "financial_res": return <FinancialRes />;
-            case "career_res": return <CareerRes />;
-            case "physical_res": return <PhysicalRes />;
+            case "mental_res": return (
+                <>
+                    <BackHeader />
+                    <MentalRes />
+                </>
+            );
+            case "financial_res": return (
+                <>
+                    <BackHeader />
+                    <FinancialRes />
+                </>
+            );
+            case "career_res": return (
+                <>
+                    <BackHeader />
+                    <CareerRes />
+                </>
+            );
+            case "physical_res": return (
+                <>
+                    <BackHeader />
+                    <PhysicalRes />
+                </>
+            );
             default: return null;
         }
     };
@@ -82,7 +102,7 @@ export default function Resources() {
             <SafeAreaView style={{ flex: 1 }}>
                 {!displayedTab ? (
                     <>
-                        <Text style={[styles.header, themeStyles[theme].headerTitle]}>Resources</Text>
+                        <Text style={[styles.header, themeStyles[theme].headerTitle]}>{t("Resources")}</Text>
                         <Carousel
                             loop
                             width={screenWidth}
@@ -106,6 +126,16 @@ export default function Resources() {
     );
 }
 
+const RenderItem = ({ item, onPress, themeStyles }) => (
+    <TouchableOpacity onPress={() => onPress(item.route)}>
+        <View style={[styles.item, { backgroundColor: Colors.SECONDARY }]}>
+            <Ionicons name={item.icon} size={96} color={themeStyles.iconColor} style={{ marginBottom: 20 }} />
+            <Text style={[styles.itemText, { color: themeStyles.sectionTitle.color }]}>{item.title}</Text>
+            <Text style={[styles.cardDescription, { color: themeStyles.text.color }]}>{item.description}</Text>
+        </View>
+    </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -113,11 +143,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.CREAM,
     },
     item: {
-        width: Dimensions.get('window').width * 0.9,
+        width: Platform.OS === 'android' ? Dimensions.get('window').width * 1 : Dimensions.get('window').width * 0.99,
         alignSelf: 'center',
-        height: 650,
+        height: Platform.OS === 'android' ? 540 : 650,
         borderRadius: 20,
-        padding: 20,
+        padding: 30,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
@@ -135,12 +165,21 @@ const styles = StyleSheet.create({
     cardDescription: {
         fontSize: 16,
         textAlign: 'center',
+        paddingHorizontal: 10,
     },
     header: {
         fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: TITLE_MARGIN_BOTTOM,
+    },
+    backHeaderCentered: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 20,
+    },
+    backButtonCentered: {
+        padding: 4,
     },
 });
 
@@ -154,6 +193,7 @@ const themeStyles = {
         buttonText: { color: Colors.WHITE },
         text: { color: Colors.BLACK },
         iconColor: Colors.BLACK,
+        backButtonIconColor: Colors.BLACK,
     },
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
@@ -164,6 +204,7 @@ const themeStyles = {
         buttonText: { color: Colors.WHITE },
         text: { color: Colors.BLACK },
         iconColor: Colors.BLACK,
+        backButtonIconColor: Colors.WHITE,
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },
@@ -174,5 +215,19 @@ const themeStyles = {
         buttonText: { color: "#000000" },
         text: { color: Colors.BLACK },
         iconColor: Colors.BLACK,
+        backButtonIconColor: "#FFFF00",
     },
-}; 
+    backHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+    },
+    backTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+};

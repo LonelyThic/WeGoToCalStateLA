@@ -4,6 +4,10 @@ import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import {
+  CognitoIdentityProviderClient,
+  SignUpCommand,
+} from "amazon-cognito-identity-js";
 
 export default function Signup() {
   const router = useRouter();
@@ -30,23 +34,33 @@ export default function Signup() {
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters long!");
+    if (password.length < 8) {
+      Alert.alert("Error", "Password must be at least 8 characters long!");
       return;
     }
 
     try {
-      /*
-      
-        Cognito Code Here
-      
-      */
+      const command = new SignUpCommand({
+        ClientId: "13872k4r03aunk26tqhk3jh2j9", // from Cognito console
+        Username: username,
+        Email: email,
+        Password: password,
+        UserAttributes: [
+          {
+            Name: "email",
+            Value: email,
+          },
+        ],
+      });
+  
+      const response = await client.send(command);
+      console.log("User registration response:", response);
 
       Alert.alert("Success", "Account created successfully!");
       router.push('/authentication/login');
 
     } catch (error) {
-      Alert.alert("Error", "Failed to create an account. Try again.");
+      Alert.alert("Error", "Error registering user:", err);
     }
   };
 
