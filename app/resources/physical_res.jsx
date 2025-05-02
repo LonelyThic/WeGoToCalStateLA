@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { Dimensions, Linking, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Colors from '../../constant/Colors';
 import { useTheme } from "../context/ThemeContext";
 
@@ -40,43 +41,35 @@ const data = [
     }
 ];
 
-const RenderItem = ({ item }) => {
+export default function Resources({ setDisplayedTab }) {
     const { theme } = useTheme();
-    return (
-        <TouchableOpacity onPress={() => item.resources?.[0]?.url && Linking.openURL(item.resources[0].url)}>
-            <View style={styles.item}>
-                <Ionicons name={item.icon} size={128} color={themeStyles[theme].sectionTitle.color} style={{ marginBottom: 20 }} />
-                <Text style={[styles.itemText, themeStyles[theme].sectionTitle]}>{item.title}</Text>
-                <Text style={[styles.cardDescription, themeStyles[theme].text]}>{item.description}</Text>
-            </View>
-        </TouchableOpacity>
-    );
-};
 
-export default function Resources() {
-    const { theme } = useTheme();
-    const screenWidth = Dimensions.get('window').width;
+    const fadeAnim = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => ({ opacity: fadeAnim.value }));
+
+    const openInApp = async (url) => {
+        await WebBrowser.openBrowserAsync(url);
+    };
 
     return (
-        <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-            <View style={{ paddingHorizontal: 25 }}>
-                <Text style={[styles.header, themeStyles[theme].headerTitle]}>Physical Resources</Text>
-            </View>
-            <View>
-                <Carousel
-                    loop
-                    width={screenWidth}
-                    height={600}
-                    autoPlay={false}
-                    data={data}
-                    scrollAnimationDuration={1000}
-                    mode="parallax"
-                    modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 30 }}
-                    style={{ marginBottom: 20 }}
-                    renderItem={({ item }) => <RenderItem item={item} />}
-                />
-            </View>
-        </SafeAreaView>
+        <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
+                <View style={{ paddingHorizontal: 25 }}>
+                    <Text style={[styles.header, themeStyles[theme].headerTitle]}>Physical Resources</Text>
+                </View>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    {data.map((item) => (
+                        <TouchableOpacity key={item.id} onPress={() => item.resources?.[0]?.url && openInApp(item.resources[0].url)}>
+                            <View style={styles.card}>
+                                <Ionicons name={item.icon} size={48} color={themeStyles[theme].sectionTitle.color} style={{ marginBottom: 10 }} />
+                                <Text style={[styles.itemText, themeStyles[theme].sectionTitle]}>{item.title}</Text>
+                                <Text style={[styles.cardDescription, themeStyles[theme].text]}>{item.description}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </SafeAreaView>
+        </Animated.View>
     );
 }
 
@@ -86,14 +79,16 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: Colors.CREAM,
     },
-    item: {
-        width: Dimensions.get('window').width,
-        height: 600,
+    scrollContainer: {
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        paddingBottom: 100, // Added for smoother scroll ending
+    },
+    card: {
         backgroundColor: Colors.SECONDARY,
         borderRadius: 12,
-        paddingTop: 20,
-        paddingHorizontal: 25,
-        justifyContent: 'center',
+        padding: 20,
+        marginBottom: 20,
         alignItems: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.2,
@@ -118,6 +113,14 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 25,
     },
+    backHeaderCentered: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 20,
+    },
+    backButtonCentered: {
+        padding: 10,
+    },
 });
 
 const themeStyles = {
@@ -134,12 +137,13 @@ const themeStyles = {
     dark: {
         container: { backgroundColor: Colors.M_CHAR },
         headerTitle: { color: Colors.WHITE },
-        sectionTitle: { color: Colors.WHITE },
+        sectionTitle: { color: Colors.BLACK },
         textInput: { backgroundColor: Colors.GRAY, color: Colors.WHITE },
         button: { backgroundColor: Colors.GRAY },
         buttonText: { color: Colors.WHITE },
-        text: { color: Colors.WHITE },
+        text: { color: Colors.BLACK },
         iconColor: Colors.WHITE,
+        backIcon: Colors.WHITE,
     },
     "high-contrast": {
         container: { backgroundColor: "#000000" },

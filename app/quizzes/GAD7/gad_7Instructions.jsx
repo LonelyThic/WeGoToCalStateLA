@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -14,6 +15,9 @@ export default function GAD7Instructions() {
     <SafeAreaView style={[styles.safeContainer, themeStyles[theme].container]}>
       <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <TouchableOpacity onPress={() => router.back()} style={{ alignSelf: 'flex-start', padding: 10, marginLeft: 10 }}>
+            <Ionicons name="arrow-back" size={24} color={themeStyles[theme].title.color} />
+          </TouchableOpacity>
           {/* Title */}
           <Text style={[styles.title, themeStyles[theme].title]}>GAD - 7 Instructions</Text>
 

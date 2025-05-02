@@ -1,14 +1,14 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Colors from "../constant/Colors";
 import Corners from "../constant/Corners";
 
 const TOP_BUFFER = 60;
-const BOTTOM_BUFFER = 60;
+const BOTTOM_BUFFER = Platform.OS === "ios" ? 60 : 120;
 
 
 export default function Index() {
@@ -36,18 +36,12 @@ export default function Index() {
         />
 
         <View style={styles.content}>
-          <Text style={styles.title}>WeGoToCalStateLA</Text>
-
-          <TouchableOpacity style={styles.button} onPress={() => router.push("/authentication/signup")}>
-            <Text style={styles.buttonText}>Signup</Text>
+          <Text style={styles.demoNote}>Demo Mode</Text>
+          <TouchableOpacity onPress={() => router.push("/debug")}>
+            <Text style={styles.title}>WeGoToCalStateLA</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/authentication/login")}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={() => router.push("/debug")}>
-            <Text style={styles.buttonText}>Debug</Text>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("../home_screen/home")}>
+            <Text style={styles.buttonText}>Enter App</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -78,6 +72,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 25,
     justifyContent: "center",
   },
+  demoNote: {
+    textAlign: "center",
+    color: Colors.WHITE,
+    fontStyle: "italic",
+    marginBottom: 10,
+    fontSize: 16,
+  },
   title: {
     fontSize: 30,
     fontWeight: "bold",
@@ -86,11 +87,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    padding: 15,
+    padding: 60,
     backgroundColor: Colors.BLACK,
     marginTop: 20,
     borderRadius: 10,
     alignItems: "center",
+    width: '100%',
   },
   buttonOutline: {
     backgroundColor: Colors.PRIMARY,

@@ -1,4 +1,4 @@
-const TOP_BUFFER = 120;
+const TOP_BUFFER = Platform.OS === 'android' ? 70 : 20;
 const BOTTOM_BUFFER = 120;
 const TITLE_MARGIN_BOTTOM = 20;
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,7 +6,7 @@ import Checkbox from 'expo-checkbox';
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from "../../constant/Colors";

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"; // For chatbot icon
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView as RNSafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,6 +20,7 @@ export default function Home() {
   const insets = useSafeAreaInsets();
   const [displayedTab, setDisplayedTab] = useState("Home");
   const [activeTab, setActiveTab] = useState("Home");
+  const { t } = useTranslation();
 
   const fadeAnim = useSharedValue(1);
 
@@ -60,10 +62,10 @@ export default function Home() {
   return (
     <>
       <View style={[styles.topBar, themeStyles[theme].topBar, { paddingTop: insets.top }]}>
-        <Text style={[styles.username, { color: themeStyles[theme].usernameText }]}>Welcome back, Ryan</Text>
+        <Text style={[styles.username, { color: themeStyles[theme].usernameText }]}>{t("Welcome back, User")}</Text>
         <TouchableOpacity
           accessible
-          accessibilityLabel="Go to quizzes"
+          accessibilityLabel={t("Go to Quizzes")}
           onPress={() => router.push("../quizzes/quiz_list")}
         >
           <Ionicons name="clipboard-outline" size={24} color={themeStyles[theme].iconColor} />
@@ -106,19 +108,19 @@ export default function Home() {
       <View style={[styles.navBar, themeStyles[theme].navBar]}>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Home")}>
           <Ionicons name="home" size={24} color={themeStyles[theme].iconColor} />
-          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Home</Text>
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>{t("Home")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Resources")}>
           <Ionicons name="book" size={24} color={themeStyles[theme].iconColor} />
-          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Resources</Text>
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>{t("Resources")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Check-In")}>
           <Ionicons name="checkmark-circle" size={24} color={themeStyles[theme].iconColor} />
-          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Check-In</Text>
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>{t("Daily Check In")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => handleTabChange("Profile")}>
           <Ionicons name="person" size={24} color={themeStyles[theme].iconColor} />
-          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>Profile</Text>
+          <Text style={[styles.navLabel, themeStyles[theme].navLabel]}>{t("Profile")}</Text>
         </TouchableOpacity>
       </View>
     </AnimatedSafeAreaView>
@@ -194,6 +196,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: Colors.BLACK, // You can replace this with a dynamic color later
   },
   navButton: {
     alignItems: "center",
@@ -221,6 +226,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
     zIndex: 10,
+    borderTopWidth: 0,
+    borderBottomWidth: 1,
+    borderColor: Colors.BLACK, // You can replace this with a dynamic color later
   },
   username: {
     fontSize: 18,
@@ -270,9 +278,9 @@ const themeStyles = {
     buttonText: { color: "#FFFF00" },
     progressText: { color: "#FFFF00" },
     navBar: { backgroundColor: Platform.OS === 'android' ? "#000000" : "#FFFF00" },
-    navLabel: { color: "#FFFF00" },
+    navLabel: { color: Platform.OS === 'android' ? "#FFFF00" : Colors.BLACK },
     topBar: { backgroundColor: Platform.OS === 'android' ? "#000000" : "#FFFF00" },
-    iconColor: "#FFFF00",
-    usernameText: "#FFFF00",
+    iconColor: Platform.OS === 'android' ? "#FFFF00" : Colors.BLACK,
+    usernameText: Platform.OS === 'android' ? "#FFFF00" : Colors.BLACK,
   },
 };

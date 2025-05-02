@@ -1,4 +1,5 @@
-import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,10 +8,14 @@ import { useTheme } from "../../context/ThemeContext";
 
 export default function GAD7Disclaimer({ navigation }) {
   const { theme } = useTheme();
+  const router = useRouter();
 
   return (
     <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <TouchableOpacity onPress={() => router.back()} style={{ alignSelf: 'flex-start', padding: 10, marginLeft: 10 }}>
+          <Ionicons name="arrow-back" size={24} color={themeStyles[theme].title.color} />
+        </TouchableOpacity>
         {/* Title */}
         <Text style={[styles.title, themeStyles[theme].title]}>GAD - 7 Test Disclaimer</Text>
 
@@ -69,7 +74,7 @@ export default function GAD7Disclaimer({ navigation }) {
           <Text style={[styles.buttonText, themeStyles[theme].buttonText]}>Continue</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.previousResultsButton} onPress={() => navigation.navigate("PreviousResults")}>
+        <TouchableOpacity style={styles.previousResultsButton} onPress={() => router.push("/quizzes/prev_score")}>
           <Text style={styles.previousResultsText}>Previous Results</Text>
         </TouchableOpacity>
       </ScrollView>
