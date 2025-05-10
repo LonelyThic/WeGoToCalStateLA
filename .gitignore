@@ -2,37 +2,92 @@
 
 # dependencies
 node_modules/
+.pnp/
+.pnp.js
+
+# TypeScript
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Expo
 .expo/
-dist/
+.expo-shared/
 web-build/
-expo-env.d.ts
+dist/
 
-# Native
-*.orig.*
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mobile app specific
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.orig.*
+
+# AWS Lambda
+lambda-package.zip
+
+# Testing
+coverage/
+
+# Production
+build/
+.next/
+
+# Misc
+.DS_Store
+*.pem
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Metro
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
+# Expo
+expo-env.d.ts
 
 app-example
+.qodo

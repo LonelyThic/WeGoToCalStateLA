@@ -1,79 +1,20 @@
-import { Feather, Ionicons } from '@expo/vector-icons';
+import React, { useState, useRef, useEffect } from 'react';
+import { useChatLogic } from './useChatLogic';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
-import Colors from "../../constant/Colors";
+import { Feather, Ionicons } from '@expo/vector-icons';
+import Colors from '../../constant/Colors';
 import { useTheme } from '../context/ThemeContext';
 
 export default function AskUsScreen() {
   const router = useRouter();
-  // keep track of messages (and giving preliminary messages)
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "Hello {User}, welcome to WeGoToCalStateLA support. How can I help you?",
-      isUser: false,
-      timestamp: new Date(),
-    },
-    {
-      id: 2,
-      text: "Give me a list of resources to help me learn more about CalFresh",
-      isUser: true,
-      timestamp: new Date(),
-    },
-    {
-      id: 3,
-      text: "Absolutely! Here is a list of resources that can help learn about CalFresh:\n\n• https://www.getcalfresh.org/\n• https://www.cdss.ca.gov/calfresh\n• https://benefitscal.com/public/login\n• https://dpss.lacounty.gov/en/food/calfresh.html",
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
-  
-  const [inputText, setInputText] = useState('');
   const { theme } = useTheme();
-  
-  const sendMessage = (text) => {
-    if (!text.trim()) return;
-    
-    // Add user message
-    const newUserMessage = {
-      id: messages.length + 1,
-      text: text,
-      isUser: true,
-      timestamp: new Date()
-    };
-    
-    setMessages([...messages, newUserMessage]);
-    setInputText('');
-    
-    // simulate ai response after a short delay
-    setTimeout(() => {
-      // probably remove these and default response and eventually straight plug in the ai here
-      const aiResponses = {
-        "Help me find CalFresh resources": "Here are some CalFresh resources you might find helpful:\n\n• https://www.getcalfresh.org/\n• https://www.cdss.ca.gov/calfresh\n• https://benefitscal.com/public/login\n• Call the CalFresh Helpline: 1-877-847-3663",
-        "I need to learn about unemployment benefits": "For unemployment benefits information, please visit the EDD website at https://edd.ca.gov/unemployment/ or call 1-800-300-5616. You can file a claim online, check status, and get more information about eligibility requirements.",
-        "Tell me more about CalWorks": "CalWORKs provides temporary financial assistance and employment-focused services to families with minor children. Visit https://www.cdss.ca.gov/calworks for more information or contact your local county office.",
-        "How do I apply for a CSU Scholarship?": "To apply for CSU scholarships:\n1. Create an account on the CSU portal\n2. Complete the general scholarship application\n3. Submit by the deadline (typically February 15)\n4. Check with your specific campus for additional scholarship opportunities"
-      };
-      
-      const defaultResponse = "I'll help you find information about that. Could you provide more details about what you're looking for?";
-      
-      // change this to plug in ai chatbot
-      const newAiMessage = {
-        id: messages.length + 2,
-        text: aiResponses[text] || defaultResponse,
-        isUser: false,
-        timestamp: new Date()
-      };
-      
-      setMessages(prevMessages => [...prevMessages, newAiMessage]);
-    }, 1000);
-  };
+  const { messages, input, setInput, sendMessage } = useChatLogic([
+    { role: 'assistant', content: "Hello {User}, welcome to WeGoToCalStateLA support. How can I help you?" }
+  ]);
   
   return (
     <SafeAreaView style={[styles.container, themeStyles[theme].container]}>
-    {/* this doesn't show up on the screen? */}
       <Stack.Screen options={{
         headerTitle: "ASK US",
         headerTitleAlign: 'center',
@@ -82,7 +23,6 @@ export default function AskUsScreen() {
         headerStyle: themeStyles[theme].headerStyle
       }} />
       
-      {/* adjusts where keyboard is */}
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -93,16 +33,14 @@ export default function AskUsScreen() {
           </TouchableOpacity>
         </View>
         <ScrollView style={styles.messagesContainer}>
-          {messages.map((message) => (
-            // seees the user and defines the style based on whether user or ai
-            <View key={message.id} style={[
+          {messages.map((message, index) => (
+            <View key={message.id || index} style={[
               styles.messageBubbleRow,
-              message.isUser ? styles.userRow : styles.aiRow
+              message.role === 'user' ? styles.userRow : styles.aiRow
             ]}>
               {!message.isUser && (
                 <View style={styles.logoContainer}>
                   <Image 
-                  // goes into images for CSULA
                     source={require('../../assets/images/CSULA.png')} 
                     style={styles.logo} 
                   />
@@ -115,10 +53,9 @@ export default function AskUsScreen() {
                 <Text style={[
                   styles.messageText,
                 ]}>
-                  {message.text}
+                  {message.content}
                 </Text>
                 
-                {/* if the message is from ai add feedback buttons */}
                 {!message.isUser && (
                   <View style={styles.feedbackButtons}>
                     <TouchableOpacity style={styles.feedbackButton}>
@@ -131,7 +68,6 @@ export default function AskUsScreen() {
                 )}
               </View>
               
-              {/* profile circle and face */}
               {message.isUser && (
                 <View style={styles.profileIconContainer}>
                   <View style={styles.profileIcon}>
@@ -146,14 +82,14 @@ export default function AskUsScreen() {
         
         <View style={styles.inputContainer}>
           <TextInput
-            style={[styles.input, themeStyles[theme].textInput]}
-            value={inputText}
-            onChangeText={setInputText}
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
             placeholder="How can I help you?"
             placeholderTextColor="#888"
           />
           <View style={styles.sendButtonsContainer}>
-            <TouchableOpacity style={styles.iconButton} onPress={() => sendMessage(inputText)}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => sendMessage(input)}>
               <Feather name="send" size={24} color="black" />
             </TouchableOpacity>
           </View>
@@ -243,7 +179,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   profileIconContainer: {
-    // move message 10 away
     marginLeft: 10,
     alignItems: 'center',
   },
