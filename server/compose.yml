@@ -1,0 +1,57 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.development
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/server/src
+      - ./test:/server/test
+
+  redis:
+    image: redis:8.6.0-alpine
+    command: ["redis-server"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 1s
+      timeout: 20s
+    expose:
+      - "6379"
+
+  migrate:
+    image: amacneil/dbmate
+    env_file:
+      - .env.development
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["up"]
+    volumes:
+      - ./db/migrations:/db/migrations
+
+  db:
+    image: mysql:latest
+    env_file:
+      - .env.development
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      interval: 10s
+      retries: 5
+    expose:
+      - "3306"
+    volumes:
+      - backend-db-data:/var/lib/mysql
+
+volumes:
+  backend-db-data:
