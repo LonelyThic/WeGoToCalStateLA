@@ -1,0 +1,20 @@
+
+{ "items" : [
+  {
+    "id": "t1",
+    "Author": "Alex J.",
+    "text": "Welcome to WeGo!",
+    "likes": 4,
+    "replies": [
+      {"id": "r1", "Author": "Max", "text": "Hi everyone!!"}
+    ]
+  },
+  {
+    "id": "t2",
+    "Author": "Joe",
+    "text": "Reminder to stay hydrated :)",
+    "likes": 10,
+    "replies": []
+  }
+]
+}

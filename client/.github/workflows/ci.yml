@@ -1,0 +1,213 @@
+name: WeGoApp CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [ main ]
+
+jobs:
+  # Code Quality and Linting
+  quality-check:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🏗 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🔍 Run ESLint
+      run: npm run lint
+      continue-on-error: false
+      
+    - name: 🔧 TypeScript Check
+      run: npx tsc --noEmit
+      continue-on-error: false
+
+  # Security Audit
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🏗 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🛡️ Run npm audit
+      run: npm audit --audit-level moderate
+      continue-on-error: true
+      
+    - name: 🔐 Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  # Build Tests
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: [quality-check]
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🏗 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🏗️ Setup Expo CLI
+      run: npm install -g @expo/cli
+      
+    - name: 🌐 Build for Web
+      run: npm run build:web
+      env:
+        NODE_ENV: production
+        
+    - name: 📊 Check bundle size
+      run: |
+        if [ -d "dist" ]; then
+          echo "📦 Web bundle size:"
+          du -sh dist/
+          echo "📁 Detailed breakdown:"
+          find dist -name "*.js" -o -name "*.css" | head -10 | xargs ls -lh
+        else
+          echo "❌ No dist directory found"
+          exit 1
+        fi
+        
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: dist/
+        retention-days: 7
+
+  # Mobile Build Check (iOS/Android compatibility)
+  mobile-compatibility:
+    name: Mobile Compatibility Check
+    runs-on: ubuntu-latest
+    needs: [quality-check]
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🏗 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🏗️ Setup Expo CLI
+      run: npm install -g @expo/cli
+      
+    - name: 📱 Check Expo configuration
+      run: npx expo config --type prebuild
+      
+    - name: 🔍 Validate app.json/app.config.js
+      run: |
+        if [ -f "app.json" ]; then
+          echo "✅ app.json found"
+          cat app.json | jq '.' > /dev/null && echo "✅ Valid JSON" || echo "❌ Invalid JSON"
+        else
+          echo "❌ No app.json found"
+          exit 1
+        fi
+
+  # Performance and Bundle Analysis
+  performance-check:
+    name: Performance Analysis
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: web-build
+        path: dist/
+        
+    - name: 📊 Bundle Analysis
+      run: |
+        echo "🔍 Analyzing bundle size..."
+        
+        # Check for large files
+        echo "📦 Files larger than 1MB:"
+        find dist -size +1M -type f -exec ls -lh {} \; || echo "✅ No files larger than 1MB"
+        
+        # Check total bundle size
+        TOTAL_SIZE=$(du -sb dist | cut -f1)
+        TOTAL_SIZE_MB=$((TOTAL_SIZE / 1024 / 1024))
+        
+        echo "📊 Total bundle size: ${TOTAL_SIZE_MB}MB"
+        
+        # Warn if bundle is too large
+        if [ $TOTAL_SIZE_MB -gt 50 ]; then
+          echo "⚠️ Warning: Bundle size is larger than 50MB"
+          echo "Consider code splitting or removing unused dependencies"
+        else
+          echo "✅ Bundle size is acceptable"
+        fi
+
+  # Final Status Check
+  ci-success:
+    name: ✅ All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [quality-check, security-audit, build-test, mobile-compatibility]
+    if: always()
+    
+    steps:
+    - name: 🎉 Success
+      if: ${{ needs.quality-check.result == 'success' && needs.build-test.result == 'success' && needs.mobile-compatibility.result == 'success' }}
+      run: |
+        echo "🎉 All CI checks passed successfully!"
+        echo "✅ Code quality: PASSED"
+        echo "✅ Build test: PASSED" 
+        echo "✅ Mobile compatibility: PASSED"
+        echo "🚀 Ready for code review and merge!"
+        
+    - name: ❌ Failure
+      if: ${{ needs.quality-check.result != 'success' || needs.build-test.result != 'success' || needs.mobile-compatibility.result != 'success' }}
+      run: |
+        echo "❌ Some CI checks failed:"
+        echo "Code quality: ${{ needs.quality-check.result }}"
+        echo "Build test: ${{ needs.build-test.result }}"
+        echo "Mobile compatibility: ${{ needs.mobile-compatibility.result }}"
+        echo "Security audit: ${{ needs.security-audit.result }}"
+        echo "Please fix the issues before merging."
+        exit 1

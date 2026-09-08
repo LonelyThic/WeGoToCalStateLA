@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: keycloak-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloakpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: keycloakv1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&3; grep 'HTTP/1.0 200' <&3"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+    restart: unless-stopped
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: "xforwarded"
+      KC_HOSTNAME: "http://auth.localhost"
+    command:
+      - start-dev
+      - --import-realm
+      - --db=postgres
+      - --db-url-host=postgres
+      - --db-url-database=keycloak
+      - --db-username=keycloak
+      - --db-password=keycloakpassword
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
