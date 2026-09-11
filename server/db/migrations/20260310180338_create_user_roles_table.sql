@@ -3,7 +3,7 @@ CREATE TABLE user_roles(
     user_id BIGINT UNSIGNED NOT NULL,
     role_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (user_id, role_id),
-    created_at NOT NULL TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_roles_user_id
         FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_user_roles_role_id

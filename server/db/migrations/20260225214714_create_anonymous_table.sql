@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE anonymous_name (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NULL UNIQUE,
+    user_id BIGINT UNSIGNED NULL UNIQUE,
     anonymous_name VARCHAR(255) NOT NULL UNIQUE,
     CONSTRAINT fk_anonymous_user
         FOREIGN KEY (user_id)
