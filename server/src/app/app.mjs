@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { createAPIRouter } from '../routes/index.mjs'
 import errorHandler from '../middlewares/errorHandler.mjs'
@@ -39,6 +40,10 @@ import {createVOPRFRouter} from "../routes/auth/voprf.mjs";
 
 export function createApp(db, redis, emailService){
     const app = express()
+     app.use(cors({
+        origin: process.env.CLIENT_URL || 'http://localhost:8081',
+        credentials: true,
+    }))
     app.use(express.json())
     app.use(cookieParser())
     //launch up the store / repo

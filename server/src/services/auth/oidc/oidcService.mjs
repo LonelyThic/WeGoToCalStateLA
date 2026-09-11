@@ -2,6 +2,7 @@ import * as client from 'openid-client'
 import { BadRequestError } from '../../../errors/badRequestError.mjs'
 import {generateKey} from "../../../util/keyGenerator.mjs";
 import {UnauthorizedError} from "../../../errors/unauthorizedError.mjs";
+import {ServiceUnavailable} from "../../../errors/serviceUnavailable.mjs";
 
 export function createOIDCService({oidcStore, jwtTokenService, openIdClient, openIdConfig, provider}){
     return{
@@ -10,6 +11,12 @@ export function createOIDCService({oidcStore, jwtTokenService, openIdClient, ope
     }
 
     async function startOIDCSignup() {
+        if (!openIdClient) {
+            throw new ServiceUnavailable(
+                null,
+                `${provider} sign-in is not configured on this server. Set GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET to enable it.`
+            )
+        }
         //perform pkrf generation
         const codeVerifier = client.randomPKCECodeVerifier()
         const codeChallenge =

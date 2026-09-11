@@ -35,7 +35,7 @@ export function createUserRepo(db){
 
     async function checkUserExistsByUserUuid(userUuid){
         const [rows] = await db.execute(
-            `SELECT EXISTS(SELECT 1 FROM users WHERE uuid_bin = UUID_TO_BIN(?)) AS user_exists`,
+            `SELECT EXISTS(SELECT 1 FROM users WHERE user_uuid = UUID_TO_BIN(?)) AS user_exists`,
             [userUuid]
         )
         return rows[0].user_exists === 1
@@ -76,7 +76,7 @@ export function createUserRepo(db){
     //soft delete
     async function deleteByUserId(userId) {
         const [result] = await db.execute(
-            'Update users set deleted_at = NOW() ,  username = NULL,   where user_id = ? AND deleted_at IS NULL',
+            'Update users set deleted_at = NOW() where user_id = ? AND deleted_at IS NULL',
             [userId]
         )
         return result.affectedRows > 0
@@ -85,21 +85,17 @@ export function createUserRepo(db){
 
     async function deleteByUserUuid(userUuid) {
         const [result] = await db.execute(
-            'Update users set deleted_at = NOW() ,username = NULL,  where user_uuid = UUID_TO_BIN(?) AND deleted_at IS NULL',
+            'Update users set deleted_at = NOW() where user_uuid = UUID_TO_BIN(?) AND deleted_at IS NULL',
             [userUuid]
         )
         return result.affectedRows > 0
     }
 
-    async function insertUser({username , userUuid, createdAt}) {
+    async function insertUser({username, userUuid, createdAt, emailHash, passwordHash}) {
         const [result] = await db.execute(
-            'INSERT INTO users (username, user_uuid, created_at, updated_at) VALUES (?,  UUID_TO_BIN(?), ?, ?)',
-            [username, userUuid, createdAt, createdAt]
+            'INSERT INTO users (username, user_uuid, email_hash, password_hash, created_at, updated_at) VALUES (?, UUID_TO_BIN(?), ?, ?, ?, ?)',
+            [username, userUuid, emailHash ?? null, passwordHash ?? null, createdAt, createdAt]
         )
         return result.insertId
     }
 }
-
-
-
-

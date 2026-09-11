@@ -1,7 +1,8 @@
 import buildPatchQuery from '../../util/buildPatchQuery.mjs'
 import dbMapper from '../../util/dbMapper.mjs'
 import { NotFoundError } from '../../errors/notFoundError.mjs'
-export function createUserService({userRepo}) {
+import { v4 as uuidv4 } from 'uuid'
+export function createUserService({userRepo, usernameService}) {
     return{
         getByUserId,
         patchByUserId,
@@ -19,12 +20,14 @@ export function createUserService({userRepo}) {
         return count
     }
 
-    async function createUser({username, userUuid, createdAt}) {
+    async function createUser({username, userUuid, createdAt, emailHash, passwordHash} = {}) {
         //perform database insertion for user creation
         const insertId = await userRepo.insertUser({
-            username,
-            userUuid,
-            createdAt,
+            username: username ?? (await usernameService.generateUsername()),
+            userUuid: userUuid ?? uuidv4(),
+            createdAt: createdAt ?? new Date(),
+            emailHash,
+            passwordHash,
         })
         return dbMapper.fromDb(await userRepo.findByUserId(insertId))
     }
