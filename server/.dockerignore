@@ -9,5 +9,4 @@ docker-compose.yml
 .env.productionq
 *.md
 *.pem
-src
 test
