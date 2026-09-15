@@ -1,3 +1,9 @@
+FROM node:25-alpine AS builder
+WORKDIR /server
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+
 FROM node:25-alpine AS runner
 WORKDIR /server
 RUN adduser --disabled-password dev && chown -R dev:dev /server
